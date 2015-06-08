@@ -1,0 +1,28 @@
+\section{High Availability}
+
+
+High Availability is usually implemented by duplicating the service over several distinct physical or
+virtual hosts. The hosts are called a \"cluster\". The software on the hosts and other resources
+that are duplicated and necessary for the service are managed by what is called a \"cluster manager\".
+Said manager handles cluster communication and failover action over several hosts if a local service,
+that is protected by HA\footnote{High Availability} goes down.
+
+\section{Cluster Types}
+
+There are diverse cluster types for different purposes.
+\begin{itemize}
+\item High Availability Cluster to increase the availability of services.
+\item High Performance Clusters to increase the performance of services.
+\item Load Balancing Cluster to balance the load of a service.
+\end{itemize}
+
+In this work, we will only look at High Availability Clusters.
+
+\section{Software}
+To implement High Availability, different types of software for different purposes are used.
+As mentioned before, a cluster manager is used for communication between the different hosts that
+provide services in the cluster. Services are commonly called "resources" in the cluster world.
+Another software is the resource manager, which manages the resources themselves.
+This includes starting, stopping and monitoring the resources.
+\subsection{Pacemaker}
+\subsection{Corosync}
