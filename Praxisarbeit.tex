@@ -17,6 +17,8 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{pdfpages}
 \usepackage{pgfplots}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{bibliography.bib}
 \pgfplotsset{compat=1.5}
 \lstset{
 breaklines=true,
@@ -28,7 +30,6 @@ literate={ö}{{\"o}}1
          {Ü}{{\"U}}1
          {Ö}{{\"O}}1
 }
-
 \begin{document}
 \title{Praxisarbeit - Clustering mit Linux im Jahr 2015}
 \author{Noel Kuntze }
@@ -71,8 +72,7 @@ of software for high availability on the Linux platform.
 \nocite{*}
 \phantomsection
 \addcontentsline{toc}{section}{Literatur}
-\bibliographystyle{plain}
-\bibliography{swatt}
+\printbibliography
 
 \newpage
 
