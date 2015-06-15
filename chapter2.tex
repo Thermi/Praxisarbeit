@@ -1,0 +1,13 @@
+
+\section{Data Storage}
+
+The hosts in the cluster usually provide a service for which persistent shared data storage is necessary.
+If those files are static or are rarely modified, locally storing them on each node can be a solution. However, caution is advised, as makeshifts have a bad habit of sticking around.
+There are two different feasible ways to implement this in a cluster environment:
+\begin{itemize}
+\item Using a storage area network
+\item Using a network access storage
+\end{itemize}
+
+Using a storage area network in a cluster environment is good choice as it provides highly available access if the SAN\footnote{storage area network} is layed out for high availability.
+Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster fiel systems are not an option. In such a case, the cluster members would access the data over network protocols like NFS\footnote{Network File System} or CIFS\footnote{Common Internet File System}.
