@@ -16,6 +16,18 @@ There are diverse cluster types for different purposes.
 \item Load Balancing Cluster to balance the load of a service.
 \end{itemize}
 
+\section{Data Storage}
+
+The hosts in the cluster usually provide a service for which persistent data storage is necessary.
+There are two different feasible ways to implement this in a cluster environment:
+\begin{itemize}
+\item Using a storage area network
+\item Using a network access storage
+\end{itemize}
+
+Using a storage area network in a cluster environment is good choice as it provides highly available access if the SAN\footnote{storage area network} is layed out for high availability. Usually 
+Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster fiel systems are not an option.
+
 In this work, we will only look at High Availability Clusters.
 
 \section{Software}
