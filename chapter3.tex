@@ -7,7 +7,13 @@ This includes starting, stopping and monitoring the resources.
 \subsection{Pacemaker}
 \subsubsection{}
 \subsection{Corosync}
-Corosync is a descendent of the older OpenAIS project and is run as a system daemon. The software is open source and licensed under the BSD licenses. It provides group membership communication and enables the cluster members to communicate with each other on the application layer to communicate service outages, corruption and scheduled shutdowns of hosts other hosts. The daemon is written in C and is commonly used on the Linux platform together with pacemaker or c_man
+Corosync is a descendent of the older OpenAIS project and is run as a system daemon. The software is open source and licensed under the BSD licenses. It provides group membership communication and enables the cluster members to communicate with each other on the application layer to communicate service outages, corruption and scheduled shutdowns of hosts other hosts. The daemon is written in C and is commonly used on the Linux platform together with pacemaker or cman.
 \subsubsection{Services}
-
+Corosync takes up the whole task of managing the cluster and distributing the services. For this purpose, it provides 4 different service engines that can be used with the native C API\footnote{Application Programming Interface}:
+\begin{description}
+\item [confdb] Configuration and Statistics database
+\item [cpq] Closed Process Group
+\item [quorum] Provides notifications of gain or loss of quorum
+\item [sam] Simple Availability Manager
+\end{description}
 \subsection{The whole picture}
