@@ -9,5 +9,24 @@ There are two different feasible ways to implement this in a cluster environment
 \item Using a network access storage
 \end{itemize}
 
-Using a storage area network in a cluster environment is good choice as it provides highly available access if the SAN\footnote{storage area network} is layed out for high availability.
-Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster fiel systems are not an option. In such a case, the cluster members would access the data over network protocols like NFS\footnote{Network File System} or CIFS\footnote{Common Internet File System}. For concurrent access in a cluster, file systems like GFS\footnote{Gluster File System} OCFS2\footnote{Oracle Cluster File System 2} have to be used, as those provide a distributed lock manager, which is needed for data integrity. Furthermore, OCFs2 provides high performance and high availability, which is required for a high availability cluster.
+Using a storage area network in a cluster environment is good choice as it provides highly available access, if the SAN\footnote{storage area network} is layed out for high availability. That is the case in enterprise environments. As such, it can be relied upon.
+Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like NFS\footnote{Network File System} or CIFS\footnote{Common Internet File System}. For concurrent access to shared storagein a cluster, file systems like GFS\footnote{Gluster File System}, OCFS2\footnote{Oracle Cluster File System 2} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
+\subsection{Storage Area Network}
+% TODO: More information about cluster file systems and their exact characteristica (behaviour during failure, performance, scalability), also: more shared storage providers
+\subsubsection{Cluster File Systems}
+\paragraph{GFS2}
+\paragraph{GlusterFS}
+\paragraph{OCFS2}
+\subsubsection{Shared Storage Providers}
+\paragraph{DRBD}
+\subsubsection{Ceph}
+Ceph has a special position in the cluster world, as it provides all aspects of shared storage:
+\begin{itemize}
+\item block devices
+\item cluster file systems
+\item object storage via an API
+\end{itemize}
+
+Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in.
+
+\subsection{Network Access Storage}
