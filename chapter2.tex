@@ -24,9 +24,14 @@ Ceph has a special position in the cluster world, as it provides all aspects of 
 \begin{itemize}
 \item block devices
 \item cluster file systems
-\item object storage via an API
+\item object storage
 \end{itemize}
 
-Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in.
+Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents SPoFs\footnote{Single Point Of Failure}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and aintaining performance. Ceph supports a virtually unlimited number of cluster members.
 
+Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in. It also provides a gateway for object storage over a REST API and is compliant with the APIs provided by Amazon S3 and Swift.% TODO: Cite!
+
+Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}.
+
+Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
 \subsection{Network Access Storage}
