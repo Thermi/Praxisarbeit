@@ -9,13 +9,15 @@ There are two different feasible ways to implement this in a cluster environment
 \item Using a network access storage
 \item using shared storage on the cluster nodes
 \end{itemize}
-
+% TODO: Graphic of the different layers of file storage in a cluster
 Using a storage area network in a cluster environment is good choice as it provides highly available access, if the SAN\footnote{storage area network} is layed out for high availability. That is the case in enterprise environments. As such, it can be relied upon.
 Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like NFS\footnote{Network File System} or CIFS\footnote{Common Internet File System}. For concurrent access to shared storagein a cluster, file systems like GFS\footnote{Gluster File System}, OCFS2\footnote{Oracle Cluster File System 2} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
 \subsection{Storage Area Network}
 % TODO: More information about cluster file systems and their exact characteristica (behaviour during failure, performance, scalability), also: more shared storage providers
 Storage Area Networks are a common concept in enterprises and are mostly implemented with appliances from different vendors, which cluster and provide high availability. The nodes in need of shared storage import the shared storage with iSCSI or other network protocols that the own host's kernel can display as block devices. Over that block device, a cluster file system must be layed to handle concurrent access to that shared medium.
 Obviously, SPoFs in the connection to the SAN must be avoided, for which different solutions can be used.
+\subsection{Network Access Storage}
+NAS are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. NAS export their data using network file systems like NFS or CIFS, which provide their own lock manager. This solves concurrency issues. Some NAS are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
 \subsection{Shared Storage On The Cluster Nodes}
 Shared storage on the cluster nodes is a similiar topic to storage are network. The difference is,
 that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using TCP.
@@ -27,6 +29,7 @@ It provides data replication over a cluster of two hosts.  It provides a transpa
 GFS2 is the second iteration of a cluster file system of Redhat, Inc. It provides a lock manager, which allows concurrent access to a shared block storage device.
 \paragraph{GlusterFS}
 \paragraph{OCFS2}
+\paragraph{Performance Considerations}
 \subsubsection{Shared Storage Providers}
 \subsubsection{Ceph}
 Ceph has a special position in the cluster world, as it provides all aspects of shared storage:
@@ -43,4 +46,3 @@ Ceph can be used as shared storage provider, over which an arbitrary cluster fil
 Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}.
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
-\subsection{Network Access Storage}
