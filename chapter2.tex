@@ -48,6 +48,9 @@ endianness=big]{32}
 Shared storage on the cluster nodes is a similiar topic to storage are network. The difference is,
 that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using TCP.
 \paragraph{DRBD}
+DRBD stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
+It provides data replication over a cluster of two hosts. %TODO: Describe how it works
+As of the time of the writing, DRBD only works good for two nodes, but scales bad beyond it. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members.
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
@@ -60,12 +63,14 @@ endianness=big]{32}
 \bitbox{32}{Kernel} \\
 \bitbox{32}{$\cdots$} \\
 \end{bytefield}
-DRBD stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
-It provides data replication over a cluster of two hosts. %TODO: Describe how it works
-As of the time of the writing, DRBD only works good for two nodes, but scales bad beyond it. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap distributed storage.
 \subsubsection{Cluster File Systems}
 \paragraph{GFS2}
-GFS2 is the second iteration of a cluster file system of Redhat, Inc. It provides a lock manager, which allows concurrent access to a shared block storage device.
+GFS2\footnote{Global File System 2} is the second iteration of a cluster file system of Redhat, Inc. It provides different lock managers:
+\begin{description}
+\item 
+\item
+\item
+\end{description}
 \paragraph{GlusterFS}
 \paragraph{OCFS2}
 \paragraph{Performance Considerations}
@@ -79,10 +84,12 @@ Ceph has a special position in the cluster world, as it provides all aspects of 
 \item object storage
 \end{itemize}
 
-Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents SPoFs\footnote{Single Point Of Failure}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and maintaining performance. Ceph supports a virtually unlimited number of cluster members.
+Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents SPoFs\footnote{Single Point Of Failure}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and maintaining performance over an unlimited number of cluster members.
 
 Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in. It also provides a gateway for object storage over a REST API and is compliant with the APIs provided by Amazon S3 and Swift.% TODO: Cite!
 
 Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}.
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
+
+\section{Fencing/Stonith}
