@@ -73,6 +73,18 @@ GFS2\footnote{Global File System 2} is the second iteration of a cluster file sy
 \end{description}
 \paragraph{GlusterFS}
 \paragraph{OCFS2}
+OCFS2\footnote{Oracle Cluster File System 2} is a cluster file system developed by Oracle.
+Its original purpose was to serve as cluster file system for Oracle's database software.
+It provides POSIX semantics and is part of the Linux kernel since kernel version 2.6.16. 
+%TODO: Complete
+\linebreak[3]
+Its current version is 1.6. Support for it is very limited, because Oracle only
+provides any for it as part of Oracle Linux. SUSE provides support, too, but only
+if it is used on Novell's SUSE Linux Exterprise Server. The tool chain to manage
+OCFS2 file systems is available on Oracle's web site\footnote{\url{https://oss.oracle.com/projects/ocfs2-tools/}},
+however the tool chain needs patches to compile correctly. Therefore, it is advised
+to look at the rpm source of the working packages for CentOS or other distributions and use those as a basis
+to get a working tool chain.
 \paragraph{Performance Considerations}
 \paragraph{High Availability Considerations}
 \subsubsection{Shared Storage Providers}
