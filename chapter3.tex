@@ -16,4 +16,11 @@ Corosync takes up the whole task of managing the cluster and distributing the se
 \item [quorum] Provides notifications of gain or loss of quorum
 \item [sam] Simple Availability Manager
 \end{description}
+\linebreak[3]
+The native C API of corosync uses shared memory for high throughput and low latency and enables the efficient use of the API for mass sending of messages to other cluster members.
+\linebreak[3]
+Corosync can use UDP over IP or Infiniband for communication and supports different rings of communication for redundancy and prevention of false positives in the detection of unresponsive or dead hosts.
+\subsection{pcs}
+pcs\footnote{pacemaker corosync shell} is a modern program to configure and maintain clusters made of pacemaker and corosync. It provides a unified command line interface to the configuration options of corosync and pacemaker, which enables the easy configuration of the aforementioned software.
+The upstram url is \url{https://github.com/feist/pcs}. The software is primarily maintained by Chris Feist of Redhat.
 \subsection{The whole picture}
