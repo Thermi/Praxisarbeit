@@ -85,8 +85,22 @@ OCFS2 file systems is available on Oracle's web site\footnote{\url{https://oss.o
 however the tool chain needs patches to compile correctly. Therefore, it is advised
 to look at the rpm source of the working packages for CentOS or other distributions and use those as a basis
 to get a working tool chain.
+\paragraph{cLVM2}
+cLVM2 is the clustered version of LVM2, which is a volume manager for Linux.
+The clustered version enables the synchronization of the status and metadata
+of the cLVM volumes over the network.
+
+%TODO: Complete
 \paragraph{Performance Considerations}
+Usually, for High Availability clusters, it is sufficient for a cluster file system
+to have at least some performance. In numbers, this means the processing of 
+hundres of transactions, not thousands or more. A tradeoff of performance for
+availability is usually desireable.
+
 \paragraph{High Availability Considerations}
+For high availability, it is necessary to have a distributed lock manager to prevent
+a loss of availability if the host which currently has the lock manager, goes down or
+is unreachable for any reason.
 \subsubsection{Shared Storage Providers}
 \subsubsection{Ceph}
 Ceph has a special position in the cluster world, as it provides all aspects of shared storage:
