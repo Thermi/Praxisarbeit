@@ -35,6 +35,30 @@ endianness=big]{32}
 \bitbox{32}{Network Access Storage} \\
 \end{bytefield}
 NAS are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. NAS export their data using network file systems like NFS or CIFS, which provide their own lock manager. This solves concurrency issues. Some NAS are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
+\subsubsection{NFS}
+NFS\footnote{Network File System} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
+The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
+%TODO: Protocols, performance, set up
+%TODO: Write down all the RFCs for it
+\paragraph{protocols}
+NFS can be used over TCP and UDP.
+The TCP protocol is stateful and the UDP protocol is stateless.
+\paragraph{performance}
+\paragraph{lock manager}
+NFS has no intrinsic lock manager in the protocol. However, there is the NLM\footnote{Network Lock Manager}
+protocol, which can work together with the normal NFS protocol to provide a lock manager.
+It is a seperate service of nfs.
+\linebreak[3]
+NFS currently does not provide a distributed lock manager, therefore a breakdown
+of communication betweenh the nfs client and the nfs server will result in stale locks
+on the server until the connection times out. Also, there is no possibility
+for the deployment of reundant servers. As such, the loss of a single server prevents
+access to the shared resources.
+
+\subsubsection{CIFS}
+\paragraph{protocols}
+\paragraph{performance}
+\paragraph{lock manager}
 \subsection{Shared Storage On The Cluster Nodes}
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
