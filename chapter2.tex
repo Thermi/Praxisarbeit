@@ -91,14 +91,39 @@ endianness=big]{32}
 \paragraph{GFS2}
 GFS2\footnote{Global File System 2} is the second iteration of a cluster file system of Redhat, Inc. It provides different lock managers:
 \begin{description}
-\item 
-\item
-\item
+\item distributed lock manager 
+\item nolock manager
 \end{description}
 \paragraph{GlusterFS}
 \paragraph{OCFS2}
+OCFS2\footnote{Oracle Cluster File System 2} is a cluster file system developed by Oracle.
+Its original purpose was to serve as cluster file system for Oracle's database software.
+It provides POSIX semantics and is part of the Linux kernel since kernel version 2.6.16. 
+%TODO: Complete
+\linebreak[3]
+Its current version is 1.6. Support for it is very limited, because Oracle only
+provides any for it as part of Oracle Linux. SUSE provides support, too, but only
+if it is used on Novell's SUSE Linux Exterprise Server. The tool chain to manage
+OCFS2 file systems is available on Oracle's web site\footnote{\url{https://oss.oracle.com/projects/ocfs2-tools/}},
+however the tool chain needs patches to compile correctly. Therefore, it is advised
+to look at the rpm source of the working packages for CentOS or other distributions and use those as a basis
+to get a working tool chain.
+\paragraph{cLVM2}
+cLVM2 is the clustered version of LVM2, which is a volume manager for Linux.
+The clustered version enables the synchronization of the status and metadata
+of the cLVM volumes over the network.
+
+%TODO: Complete
 \paragraph{Performance Considerations}
+Usually, for High Availability clusters, it is sufficient for a cluster file system
+to have at least some performance. In numbers, this means the processing of 
+hundres of transactions, not thousands or more. A tradeoff of performance for
+availability is usually desireable.
+
 \paragraph{High Availability Considerations}
+For high availability, it is necessary to have a distributed lock manager to prevent
+a loss of availability if the host which currently has the lock manager, goes down or
+is unreachable for any reason.
 \subsubsection{Shared Storage Providers}
 \subsubsection{Ceph}
 Ceph has a special position in the cluster world, as it provides all aspects of shared storage:
@@ -116,4 +141,21 @@ Users authenticate themselves to the cluster using a mechanism that utilises sha
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
 
-\section{Fencing/Stonith}
+\section{Fencing/STONITH}
+\subsection{Purpose}
+Fencing and STONITH basicly describe the same thing: The prevention of I/O-Operations of a disconnected/misbehaving host in the cluster. For this purpose, two difference solutions have been developed:
+\begin{description}
+\item[Fencing] foo
+\item[STONITH] bar
+\end{description}
+\subsection{Fencing}
+\subsection{Stonith}
+\begin{description}
+\item[S]hoot
+\item[T]he
+\item[O]ther
+\item[N]ode
+\item[I]n
+\item[T]he 
+\item[H]ead
+\end{description}
