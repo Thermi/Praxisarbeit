@@ -17,10 +17,15 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{pdfpages}
 \usepackage{pgfplots}
-\usepackage[backend=biber]{biblatex}
+%\usepackage{biblatex}
 \usepackage{bytefield}
-\addbibresource{bibliography.bib}
+\usepackage[printonlyused]{acronym}
+\usepackage{setspace}
+
 \pgfplotsset{compat=1.5}
+\newcommand*\BlankPage{\newpage\null\thispagestyle{empty}\newpage}
+\setstretch{1.3}
+\newcommand{\comment}[1]{}  %comment not shown
 \lstset{
 breaklines=true,
 literate={ö}{{\"o}}1
@@ -31,12 +36,15 @@ literate={ö}{{\"o}}1
          {Ü}{{\"U}}1
          {Ö}{{\"O}}1
 }
+
 \begin{document}
+\pagenumbering{roman}
 \title{Praxisarbeit - Clustering with Linux in the year 2015}
 \author{Noel Kuntze }
 \maketitle
 
-\newpage
+\BlankPage
+
 \tableofcontents
 \setcounter{tocdepth}{2}
 
@@ -50,7 +58,26 @@ implementing high availability for services on that platform is an important asp
 critical network services. This paper lists and asesses the modern implementations
 of software for high availability on the Linux platform.
 
+\cleardoublepage
+\phantomsection
+
+\addcontentsline{toc}{section}{Abbildungsverzeichnis}
+\listoffigures
+
+\cleardoublepage
+\section*{Abkürzungsverzeichnis}
+\addcontentsline{toc}{section}{Abkürzungsverzeichnis}
+\begin{acronym}
+% Akronyme
+\end{acronym}
+
 \newpage
+
+\tableofcontents
+\setcounter{tocdepth}{2}
+
+\newpage
+\pagenumbering{arabic}
 
 \include{introduction}
 
@@ -73,10 +100,10 @@ of software for high availability on the Linux platform.
 \nocite{*}
 \phantomsection
 \addcontentsline{toc}{section}{Literature}
-\printbibliography
+\bibliographystyle{alpha}
+\bibliography{bibliography.bib}
 
 \newpage
-
 \begin{appendix}
 
 \section{Attachement}
