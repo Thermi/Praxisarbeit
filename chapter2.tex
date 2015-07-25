@@ -16,7 +16,7 @@ Using network access storage is a more common solution for providing access to d
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
-\bitbox{32}{Actual files} \\
+\bitbox{32}{files} \\
 \bitbox{32}{Cluster File System} \\
 \bitbox{32}{Block Device on the cluster member} \\
 \bitbox{32}{Network Protocol (iSCSI, ...)} \\
@@ -30,7 +30,7 @@ Obviously, SPoFs in the connection to the SAN must be avoided, for which differe
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
-\bitbox{32}{Actual files} \\
+\bitbox{32}{files} \\
 \bitbox{32}{Network Protocol (NFS, CIFS, ...)} \\
 \bitbox{32}{Network Access Storage} \\
 \end{bytefield}
@@ -63,7 +63,7 @@ access to the shared resources.
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
-\bitbox{32}{Actual files} \\
+\bitbox{32}{files} \\
 \bitbox{32}{Cluster File System} \\
 \bitbox{32}{Shared Storage Implementation of your choice} \\
 \bitbox{32}{Block Device on the cluster member} \\
@@ -78,7 +78,7 @@ As of the time of the writing, DRBD only works good for two nodes, but scales ba
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
-\bitbox{32}{Actual files} \\
+\bitbox{32}{files} \\
 \bitbox{32}{Cluster File System} \\
 \bitbox{32}{Block Device on the cluster member} \\
 \bitbox{32}{DRBD block device on the cluster member} \\
