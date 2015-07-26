@@ -10,8 +10,8 @@ There are two different feasible ways to implement this in a cluster environment
 \item using shared storage on the cluster nodes
 \end{itemize}
 % TODO: Graphic of the different layers of file storage in a cluster
-Using a storage area network in a cluster environment is good choice as it provides highly available access, if the SAN\footnote{storage area network} is layed out for high availability. That is the case in enterprise environments. As such, it can be relied upon.
-Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like NFS\footnote{Network File System} or CIFS\footnote{Common Internet File System}. For concurrent access to shared storagein a cluster, file systems like GFS\footnote{Gluster File System}, OCFS2\footnote{Oracle Cluster File System 2} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
+Using a storage area network in a cluster environment is good choice as it provides highly available access, if the \ac{SAN} is layed out for high availability. That is the case in enterprise environments. As such, it can be relied upon.
+Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like \ac{NFS} or \ac{CIFS}. For concurrent access to shared storagein a cluster, file systems like \ac{GFS}, \ac{OCFS} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
 \subsection{Storage Area Network}
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
@@ -35,6 +35,7 @@ endianness=big]{32}
 \bitbox{32}{Network Access Storage} \\
 \end{bytefield}
 NAS are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. NAS export their data using network file systems like NFS or CIFS, which provide their own lock manager. This solves concurrency issues. Some NAS are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
+
 \subsubsection{NFS}
 NFS\footnote{Network File System} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
 The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
@@ -45,15 +46,18 @@ NFS can be used over TCP and UDP.
 The TCP protocol is stateful and the UDP protocol is stateless.
 \paragraph{performance}
 \paragraph{lock manager}
-NFS has no intrinsic lock manager in the protocol. However, there is the NLM\footnote{Network Lock Manager}
-protocol, which can work together with the normal NFS protocol to provide a lock manager.
+NFS from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
+protocol, which can work together with the NFS protocol to provide a lock manager.
 It is a seperate service of nfs.
+Version 4 and later of NFS provide a native lock manager, which enables concurrent access to the files.
+% Details
 \linebreak[3]
 NFS currently does not provide a distributed lock manager, therefore a breakdown
 of communication betweenh the nfs client and the nfs server will result in stale locks
 on the server until the connection times out. Also, there is no possibility
 for the deployment of reundant servers. As such, the loss of a single server prevents
-access to the shared resources.
+access to the shared resources. This makes it grossly unsuitable for usage in an environment
+where high availability is needed.
 
 \subsubsection{CIFS}
 \paragraph{protocols}
@@ -71,6 +75,7 @@ endianness=big]{32}
 \end{bytefield}
 Shared storage on the cluster nodes is a similiar topic to storage are network. The difference is,
 that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using TCP.
+
 \paragraph{DRBD}
 DRBD stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
 It provides data replication over a cluster of two hosts. %TODO: Describe how it works
@@ -87,9 +92,10 @@ endianness=big]{32}
 \bitbox{32}{Kernel} \\
 \bitbox{32}{$\cdots$} \\
 \end{bytefield}
+
 \subsubsection{Cluster File Systems}
 \paragraph{GFS2}
-GFS2\footnote{Global File System 2} is the second iteration of a cluster file system of Redhat, Inc. It provides different lock managers:
+\ac{GFS2} is the second iteration of a cluster file system of Redhat, Inc. It provides different lock managers:
 \begin{description}
 \item distributed lock manager 
 \item nolock manager
