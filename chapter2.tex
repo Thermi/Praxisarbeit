@@ -36,7 +36,7 @@ endianness=big]{32}
 \end{bytefield}
 \ac{NAS} are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. \ac{NAS} export their data using network file systems like \ac{NFS} or \ac{CIFS}, which provide their own lock manager. This solves concurrency issues. Some \ac{NAS} are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
 
-\subsubsection{NFS}
+\subsubsection{\ac{NFS}}
 \ac{NFS} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
 The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
 %TODO: Protocols, performance, set up
@@ -45,6 +45,7 @@ The latest version is 4.1 and is openly standardized in RFCs, so anyone can impl
 \ac{NFS} can be used over TCP and UDP.
 The TCP protocol is stateful and the UDP protocol is stateless.
 \paragraph{performance}
+\paragraph{security}
 \paragraph{lock manager}
 \ac{NFS} from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
 protocol, which can work together with the \ac{NFS} protocol to provide a lock manager.
@@ -62,6 +63,7 @@ where high availability is needed.
 \subsubsection{\ac{CIFS}}
 \paragraph{protocols}
 \paragraph{performance}
+\paragraph{security}
 \paragraph{lock manager}
 \subsection{Shared Storage On The Cluster Nodes}
 \begin{bytefield}[boxformatting={\centering\itshape},
