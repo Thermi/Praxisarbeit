@@ -42,10 +42,15 @@ The latest version is 4.1 and is openly standardized in RFCs, so anyone can impl
 %TODO: Protocols, performance, set up
 %TODO: Write down all the RFCs for it
 \paragraph{protocols}
-\ac{NFS} can be used over TCP and UDP.
-The TCP protocol is stateful and the UDP protocol is stateless.
+The \ac{NFS} itself only specifies the \ac{RPC} calls, not the transport protocol.
+\ac{NFS} from version 1 to 3 only works over UDP, but version 4 and onwards also support
+TCP.
 \paragraph{performance}
 \paragraph{security}
+\ac{NFS} has several different security mechanisms
+% ACL / UID UNIX
+% kerberos, authentication, signing, encryption
+% VPN
 \paragraph{lock manager}
 \ac{NFS} from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
 protocol, which can work together with the \ac{NFS} protocol to provide a lock manager.
@@ -64,6 +69,8 @@ where high availability is needed.
 \paragraph{protocols}
 \paragraph{performance}
 \paragraph{security}
+% kerberos 
+% VPN
 \paragraph{lock manager}
 \subsection{Shared Storage On The Cluster Nodes}
 \begin{bytefield}[boxformatting={\centering\itshape},
