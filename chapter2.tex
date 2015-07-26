@@ -31,35 +31,35 @@ Obviously, SPoFs in the connection to the SAN must be avoided, for which differe
 bitwidth=.8em,
 endianness=big]{32}
 \bitbox{32}{files} \\
-\bitbox{32}{Network Protocol (NFS, CIFS, ...)} \\
+\bitbox{32}{Network Protocol (\ac{NFS}, \ac{CIFS}, ...)} \\
 \bitbox{32}{Network Access Storage} \\
 \end{bytefield}
-NAS are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. NAS export their data using network file systems like NFS or CIFS, which provide their own lock manager. This solves concurrency issues. Some NAS are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
+\ac{NAS} are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. \ac{NAS} export their data using network file systems like \ac{NFS} or \ac{CIFS}, which provide their own lock manager. This solves concurrency issues. Some \ac{NAS} are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
 
 \subsubsection{NFS}
-NFS\footnote{Network File System} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
+\ac{NFS} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
 The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
 %TODO: Protocols, performance, set up
 %TODO: Write down all the RFCs for it
 \paragraph{protocols}
-NFS can be used over TCP and UDP.
+\ac{NFS} can be used over TCP and UDP.
 The TCP protocol is stateful and the UDP protocol is stateless.
 \paragraph{performance}
 \paragraph{lock manager}
-NFS from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
-protocol, which can work together with the NFS protocol to provide a lock manager.
-It is a seperate service of nfs.
-Version 4 and later of NFS provide a native lock manager, which enables concurrent access to the files.
+\ac{NFS} from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
+protocol, which can work together with the \ac{NFS} protocol to provide a lock manager.
+It is a seperate service of \ac{NFS}.
+Version 4 and later of \ac{NFS} provide a native lock manager, which enables concurrent access to the files.
 % Details
 \linebreak[3]
-NFS currently does not provide a distributed lock manager, therefore a breakdown
-of communication betweenh the nfs client and the nfs server will result in stale locks
+\ac{NFS} currently does not provide a distributed lock manager, therefore a breakdown
+of communication betweenh the \ac{NFS} client and the \ac{NFS} server will result in stale locks
 on the server until the connection times out. Also, there is no possibility
 for the deployment of reundant servers. As such, the loss of a single server prevents
 access to the shared resources. This makes it grossly unsuitable for usage in an environment
 where high availability is needed.
 
-\subsubsection{CIFS}
+\subsubsection{\ac{CIFS}}
 \paragraph{protocols}
 \paragraph{performance}
 \paragraph{lock manager}
