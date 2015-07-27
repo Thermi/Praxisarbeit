@@ -133,12 +133,14 @@ of the cLVM volumes over the network.
 Usually, for High Availability clusters, it is sufficient for a cluster file system
 to have at least some performance. In numbers, this means the processing of 
 hundres of transactions, not thousands or more. A tradeoff of performance for
-availability is usually desireable.
+availability is usually wanted, as a highly performing cluster is useless, if
+it easily breaks.
 
 \paragraph{High Availability Considerations}
 For high availability, it is necessary to have a distributed lock manager to prevent
 a loss of availability if the host which currently has the lock manager, goes down or
-is unreachable for any reason.
+is unreachable for any reason. A distributed lock manager avoids this by existing
+distributed on all hosts, possible with identical copies, which survive a 
 \subsubsection{Shared Storage Providers}
 \subsubsection{Ceph}
 Ceph has a special position in the cluster world, as it provides all aspects of shared storage:
@@ -174,3 +176,12 @@ Fencing and STONITH basicly describe the same thing: The prevention of I/O-Opera
 \item[T]he 
 \item[H]ead
 \end{description}
+\subsection{Usage}
+STONITH or Fencing is an optional feature of a cluster, but needed,
+to prevent unwanted I/O operations on a shared medium or a database
+by an unreachable cluster member in a split-brain situation. Usually, this is needed
+and desired in a cluster environment. STONITH or Fencing can be implemented
+through network capable power switches or \acp{BMCs} on the motherboards
+of the hosts involved, which can cut the power to the split off hosts.
+The termination of the complete cluster through STONITH or Fencing can be prevented
+through the determination of the size of the group of reachable cluster members.
