@@ -66,12 +66,30 @@ access to the shared resources. This makes it grossly unsuitable for usage in an
 where high availability is needed.
 
 \subsubsection{\ac{CIFS}}
+\ac{CIFS} or \ac{SMB} is a protocol developed by Microsoft, but originally made
+by IBM, for use in the Windows operating systems to access files on remote hosts
+over an IP based network. The protocol is readily available on Linux as part
+of the kernel and can be used to access remote file systems, which are
+either provided by a native Windows host or the smbd and nmbd services for Linux,
+which are provided by the SAMBA project.
 \paragraph{protocols}
+\ac{CIFS} can use TCP or NetBIOS as underlying transport protocols. Nowadays, TCP is
+used over port 445.
 \paragraph{performance}
+\ac{CIFS} isn't exactly famous for its performance. Version 1 has severe performance
+problems, which arise from the use of NetBIOS as transport protocol and the
+chattiness of the protocol. Newer versions, starting with 2.0, have increased
+performance through the use of tcp window scalinmg and decreased chattiness, as well
+as client side caches and a redesign of the protocol.
 \paragraph{security}
-% kerberos 
-% VPN
+\ac{CIFS} is capable of providing native authenticiy through signing of the
+packets and confidentiality through encryption of the packets.
+The key exchange is done through Kerberos, for which a \ac{KDC} is needed.
 \paragraph{lock manager}
+\ac{CIFS} has a native lock manager, which runs on the \ac{CIFS} server.
+This prevents concurrent access to single files, but can not coordinate concurrent
+and fast access to files, as the information about the held locks is not distri-
+buted to the clients.
 \subsection{Shared Storage On The Cluster Nodes}
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
@@ -134,7 +152,12 @@ Usually, for High Availability clusters, it is sufficient for a cluster file sys
 to have at least some performance. In numbers, this means the processing of 
 hundres of transactions, not thousands or more. A tradeoff of performance for
 availability is usually wanted, as a highly performing cluster is useless, if
-it easily breaks.
+it easily breaks. Judging from existing performance benchmarks,
+\ac{OCFS2} performs better than \ac{GFS2} and better than \ac{NFS}, however,
+\ac{OCFS2} has not been developed any further publicy since 2012 and version 1.4.
+Oracle Linux 5 offers version 1.6 of \ac{OCFS2}, but is a commercial product
+of Oracle and only available together with Oracle's Unbreakable Enterprise
+Kernel, which is in Oracle Linux 5, which prevents the widespread usage of this solution.
 
 \paragraph{High Availability Considerations}
 For high availability, it is necessary to have a distributed lock manager to prevent
