@@ -66,6 +66,7 @@ access to the shared resources. This makes it grossly unsuitable for usage in an
 where high availability is needed.
 
 \subsubsection{\ac{CIFS}}
+% Check whole section
 \ac{CIFS} or \ac{SMB} is a protocol developed by Microsoft, but originally made
 by IBM, for use in the Windows operating systems to access files on remote hosts
 over an IP based network. The protocol is readily available on Linux as part
@@ -190,21 +191,26 @@ Fencing and STONITH basicly describe the same thing: The prevention of I/O-Opera
 \end{description}
 \subsection{Fencing}
 \subsection{Stonith}
-\begin{description}
-\item[S]hoot
-\item[T]he
-\item[O]ther
-\item[N]ode
-\item[I]n
-\item[T]he 
-\item[H]ead
-\end{description}
 \subsection{Usage}
+% TODO: Include information about reboot, which can potentially fix the problem.
 STONITH or Fencing is an optional feature of a cluster, but needed,
 to prevent unwanted I/O operations on a shared medium or a database
 by an unreachable cluster member in a split-brain situation. Usually, this is needed
 and desired in a cluster environment. STONITH or Fencing can be implemented
-through network capable power switches or \acp{BMCs} on the motherboards
-of the hosts involved, which can cut the power to the split off hosts.
+through network capable power switches or \acp{BMC} on the motherboards
+of the hosts involved, which can cut the power to the split off hosts or
+if \acp{VM} are used by telling the hypervisor to kill the \ac{VM}.
 The termination of the complete cluster through STONITH or Fencing can be prevented
 through the determination of the size of the group of reachable cluster members.
+\subsection{Fencing classes}
+There are difference ways that fencing can be implemented in.
+\subsubsection{Power Fencing}
+The first and probably best solution is power fencing.
+Power fencing means, that access is prevented by cutting power to the cluster member.
+For physical hosts, this can mean accessing a networked powerboard and switching
+off the power of a specific outlet or accessing the \acp{BMC} of the host
+and powering it off that way. Doing it this way 
+\subsubsection{Network Fencing}
+The second
+\subsubsection{Virtual Fencing}
+%fence-virt (https://github.com/ClusterLabs/fence-virt)
