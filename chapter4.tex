@@ -1,8 +1,21 @@
 \section{Setting up a HA cluster on Linux}
-This part is about the real wordl installation of an HA cluster on Linux using the tools introduced in the former sections.
+This part is about the real wordl installation of an \ac{HA} cluster on Linux using the tools introduced in the former sections.
 
-% VMs
-% Services
+\subsection{Cluster architecture}
+For the cluster, we will use 3 CentOS 7 \acp{VMs}, which are connected
+to three \acp{VLANs}: 
+\begin{itemize}
+\item 192.168.178.0/24 for public cluster resources
+\item 192.168.180.0/24 for the management of the clusters
+\item 192.168.181.64/27 for the cluster communication
+\end{itemize}
+The services we are going to set up are the following:
+\begin{itemize}
+\item A cluster IP
+\item A lighttpd web server to host an example web site
+\item A shared storage built with DRBD and GFS2
+\end{itemize}
+
 % Stonith
 % Test
 % Performance
