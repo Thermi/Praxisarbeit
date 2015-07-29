@@ -200,8 +200,9 @@ and desired in a cluster environment. STONITH or Fencing can be implemented
 through network capable power switches or \acp{BMC} on the motherboards
 of the hosts involved, which can cut the power to the split off hosts or
 if \acp{VM} are used by telling the hypervisor to kill the \ac{VM}.
-The termination of the complete cluster through STONITH or Fencing can be prevented
-through the determination of the size of the group of reachable cluster members.
+A whole cluster cannot be taken out through fencing or \ac{STONITH}, because
+the decision to fence a host is made through the quorum.
+% TODO: Really?
 \subsection{Fencing classes}
 There are difference ways that fencing can be implemented in.
 \subsubsection{Power Fencing}
@@ -209,9 +210,29 @@ The first and probably best solution is power fencing.
 Power fencing means, that access is prevented by cutting power to the cluster member.
 For physical hosts, this can mean accessing a networked powerboard and switching
 off the power of a specific outlet or accessing the \acp{BMC} of the host
-and powering it off that way. Doing it this way 
+and powering it off that way. Fencing the hosts by $reseting$ the power, not $cutting$
+the power enables the host to recover from an error, if it is related to the operating
+system and can be fixed by a power cycle. This can increase the durability of a cluster.
 \subsubsection{Network Fencing}
 The second type of fencing is network fencing. It works by disconnecting the host
-from the shared resource on the network layer.
+from the shared resource on the network layer. This makes sense if a \ac{SAN} or \ac{NAS}
+is used to host shared storage.
+% NAS sinnvoll? Concurrent access?
 \subsubsection{Virtual Fencing}
+Virtual Fencing is a term for fencing by using the hypervisor of the cluster members,
+which are guests. This is commonly done either through multicast communication with all
+\ac{VM} hypervisors, which host the cluster members, or virtual serial connections
+from the guest through the hypervisor's \ac{API}.
+\subsection{fence-virt}
+fence-Virt is an ongoing effort from ClusterLabs to build an open source solution
+to fencing in a virtualised environment and is the successor to . The upstream of the software is at Github
+\footnote{\url{https://github.com/ClusterLabs/fence-virt}}. fence-virt already supports
+fencing over multicast IP addresses and serial connections.
+Fencing over multicast IP addresses is needed in an environment, where the cluster members might
+be distributed over different \ac{VM} hosts. Addressing the fencing %server or agent?
+over multicast enables fencing of cluster members, of which it is not known where
+they run. Using multicast makes sure that the member gets fenced, independent of the
+host it's running on.
+% libvirt
+%TODO: Cite
 %fence-virt (https://github.com/ClusterLabs/fence-virt)
