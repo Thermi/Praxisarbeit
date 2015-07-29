@@ -5,7 +5,16 @@ provide services in the cluster. Services are commonly called "resources" in the
 Another software is the resource manager, which manages the resources themselves.
 This includes starting, stopping and monitoring the resources.
 \subsection{Pacemaker}
+Pacemaker is a ressource manager for \ac{HA} clusters. Every node in a cluster
+runs an instance of it. It detects failures of system daemons and the physical or
+virtual host itself. Also, it handles the complex relationship between the different
+services and resources, which are formulated by the administrator.
+Pacemaker uses the communication facilities, which are provided by Corosync
+to communicate with the Pacemaker instances on the other nodes.
 \subsubsection{History}
+Pacemaker is primarily a joint effort between Red Hat and Novell, but also
+some other, smaller companies and the open source community. The project
+exists since 2004.
 \subsubsection{Components}
 \begin{itemize}
 \item \ac{CIB}
