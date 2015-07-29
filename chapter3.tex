@@ -53,3 +53,35 @@ action on the host themselves.
 pcs\footnote{pacemaker corosync shell} is a modern program to configure and maintain clusters made of pacemaker and corosync. It provides a unified command line interface to the configuration options of corosync and pacemaker, which enables the easy configuration of the aforementioned software.
 The upstram url is \url{https://github.com/feist/pcs}. The software is primarily maintained by Chris Feist of Redhat.
 \subsection{The whole picture}
+\subsection{Availability of the software in different Linux distributions}
+% Debian https://packages.debian.org/stable/allpackages?format=txt.gz
+% CentOS
+% RHEL
+% Fedora
+% 
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|c|}
+\firsthline
+% TODO: 
+Distribution & pcs & Pacemaker & Corosync & fence-virt & fence-agents\\
+\hline
+Debian 7 & No & 1.1.7 & 1.4.2 & No & 3.1.5 \\
+Debian 8 & No & No & 1.4.6 & No & 3.1.5 \\
+\hline
+Fedora 22 & 0.9.139 & 1.1.12 & 2.3.5 & 0.3.2 & 4.0.16 \\
+Fedora 23 & 0.9.141 & 1.1.12 & 2.3.5 & 0.3.2 & 4.0.16 \\
+\hline
+CentOS 6 & 0.9.123 & 1.1.12 & 1.4.7 & 0.2.3 & 3.1.5 \\
+CentOS 7 & 0.9.137 & 1.1.12 & 2.3.4 & 0.3.2 & 4.0.11 \\
+\hline
+SLES 11 HA Extension & Unknown & Yes, version unknown & Unknown & Unknowno & Unknown \\
+SLES 12 HA Extension & Unknown & Yes, version unknown & Unknown & Unknown & Unknown \\
+\hline
+Arch Linux\footnote{Arch Linux is a rolling release distribution and hence always has the latest version} & No & Yes & Yes & No & Yes \\
+\lasthline
+\end{tabular}
+\caption{Software Availability}
+\label{table:SoftwareAvailability}
+When Pacemaker is available, then the fence agents are usually available, too.
+Therefore, there is no additional column for the fence agents.
+\end{table}
