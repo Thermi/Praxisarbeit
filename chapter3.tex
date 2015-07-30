@@ -10,7 +10,7 @@ runs an instance of it. It detects failures of system daemons and the physical o
 virtual host itself. Also, it handles the complex relationship between the different
 services and resources, which are formulated by the administrator.
 Pacemaker uses the communication facilities, which are provided by Corosync
-to communicate with the Pacemaker instances on the other nodes.
+to communicate with the Pacemaker instances on the other nodes. It is primarily written in C.
 \subsubsection{History}
 Pacemaker is primarily a joint effort between Red Hat and Novell, but also
 some other, smaller companies and the open source community. The project
@@ -86,7 +86,7 @@ CentOS 7 & 0.9.137 & 1.1.12 & 2.3.4 & 0.3.2 & 4.0.11 \\
 SLES 11 HA Extension & Unknown & Yes, version unknown & Unknown & Unknowno & Unknown \\
 SLES 12 HA Extension & Unknown & Yes, version unknown & Unknown & Unknown & Unknown \\
 \hline
-Arch Linux\footnote{Arch Linux is a rolling release distribution and hence always has the latest version} & No & Yes & Yes & No & Yes \\
+Arch Linux & No & Yes & Yes & No & Yes \\
 \lasthline
 \end{tabular}
 \caption{Software Availability}
