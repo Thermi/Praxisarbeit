@@ -242,10 +242,16 @@ of use, if all cluster nodes are guests on the same host.
 \paragraph{multicast}
 If multicast is used, the agent sends out a multicast UDP packet
 to the configured multicast group, in which the desired operation, the \ac{UUID}
-of the \ac{VM}
-is contained The servers which received the packet then check the list
-of locally running \acp{VMs} against the desired 
-\ac{VM} is contained,
+of the \ac{VM} and its domain are contained, as well as other things needed
+for communication. But those are the most significant in this paragraph.
+The servers which received the packet then check the signature
+of the packet, as well as check the list of locally running \acp{VMs} against 
+the desired \ac{UUID} and domain, which are contained in the multicast packet.
+If the \ac{VM} runs on the local host, then a \ac{TCP} connection
+is initiated to the sender of the multicast packet. The agent
+and the server then authenticate each other using a challenge response protocol.
+Then the server executes the operation the host sent in the multicast packet,
+sends back the result to the agent and closes the connection.
 % Multicast to group, then callback by host of node to be fenced to the agent
 % multicast auth with seqn as timeofday and 6 byte random from urandom, as well as
 % shared key
