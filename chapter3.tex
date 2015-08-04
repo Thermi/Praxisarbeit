@@ -58,9 +58,16 @@ action on the host themselves.
 \paragraph{Tuning the fail detection}
 % Note towards virtual machines
 % Note towards Multicast groups and IGMP snooping
+% Aug 04 02:10:10 c7-arch-mirror-1 corosync[1058]: [MAIN  ] Corosync main process was not scheduled for 1217.9677 ms (threshold is 800.0000 ms). Consider token timeout increase.
+
 \subsection{pcs}
 pcs\footnote{pacemaker corosync shell} is a modern program to configure and maintain clusters made of pacemaker and corosync. It provides a unified command line interface to the configuration options of corosync and pacemaker, which enables the easy configuration of the aforementioned software.
 The upstram url is \url{https://github.com/feist/pcs}. The software is primarily maintained by Chris Feist of Redhat.
+% pcsd
+% Port 2224 TCP
+% unix account auth
+% no authkey by default
+
 \subsection{The whole picture}
 \subsection{Availability of the software in different Linux distributions}
 % Debian https://packages.debian.org/stable/allpackages?format=txt.gz

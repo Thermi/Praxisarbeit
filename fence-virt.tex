@@ -14,6 +14,9 @@ The client or fencing agent running on the cluster node, which wants to fence
 another node, can contact the server over either multicast IP, serial connection or
 tcp. It currently only supports libvirt.
 \subsubsection{Configuration}
+The fencing daemon (fence_virtd) takes its configuration largely from
+a configuration file, whose syntax is oriented around curly brackets and 
+sections. The syntax is described in fence_virt.con(8)
 %TODO: Configuration
 \subsubsection{Fencing}
 fence-virt already supports contacting a fencing daemon or server over
