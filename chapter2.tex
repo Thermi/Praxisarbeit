@@ -182,13 +182,15 @@ Users authenticate themselves to the cluster using a mechanism that utilises sha
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
 
+\input{clusters-vm}
+
 \section{Fencing/STONITH}
 \subsection{Purpose}
 Fencing and STONITH basicly describe the same thing: The prevention of I/O-Operations of a disconnected/misbehaving host in the cluster.
 For this purpose, two different key words have been established: Fencing and \ac{STONITH}.
 \subsection{Usage}
 % TODO: Include information about reboot, which can potentially fix the problem.
-STONITH or Fencing is an optional feature of a cluster, but needed,
+STONITH or Fencing is an optional feature of a cluster, but needed
 to prevent unwanted I/O operations on a shared medium or a database
 by an unreachable cluster member in a split-brain situation. Usually, this is needed
 and desired in a cluster environment. STONITH or Fencing can be implemented
@@ -217,8 +219,17 @@ is used to host shared storage.
 Virtual fencing is a term for fencing by using the hypervisor of the cluster members,
 which are guests. This is commonly done either through multicast communication with all
 \ac{VM} hypervisors, which host the cluster members, or virtual serial connections
-from the guest through the hypervisor's \ac{API}.
+from the guest through the hypervisor's \ac{API}. Hosting \ac{HA} clusters
+as \acp{VM} is not encouraged for production, as the added complexity of the hypervisor
+and the host \ac{OS} increase the susceptibility of the guest \ac{OS} to failure
+or hanging.
 
+% Software is even in hardware
+% corosync realtime, NICE, ...
+% shared data compromised
+% The more software, the higher the complexity
+% Increasing complexity is decreasing availability
+% 
 \input{fence-virt}
 \section{Quorum}
 Quroum (plural quora) in the cluster world describes the minimum number
