@@ -83,6 +83,13 @@ enables the use of fence-virt on networks, which are not multicast friendly.
 The fencing daemon (fence\_virtd) takes its configuration largely from
 a configuration file, whose syntax is oriented around curly brackets and 
 sections. The syntax is described in fence\_virt.conf(8)
+Every instance of fence_virtd needs its own configuration file.
+Every instance of the daemon can only listen on one frontend and one backend.
+Additionally, there is no possibility to use different credentials on a cluster.
+Therefore, each cluster needs its own instance.
+To prevent a cluster node from fencing other guests, a list of allowed fencing targets
+can be defined, based on the UUID of the guest.
+
 %TODO: Configuration
 \subsubsection{Security}
 The multicast packets are authenticated using the shared key, 6 byte of
