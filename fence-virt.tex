@@ -2,21 +2,25 @@
 fence-virt is an ongoing effort from ClusterLabs to build an open source solution
 for virtual fencing and is the successor to fence\_xvm. 
 The upstream of the software is at Github\footnote{\url{https://github.com/ClusterLabs/fence-virt}}.
+
 \subsubsection{Components}
 fence-virt consists of a daemon that is running on the hypervisor and 
 an agent, that is run by the guest. If a cluster node needs to be fenced,
 a fencing agent contacts a fencing server and asks the other node to
 be rebooted or powered off.
+
 \subsubsection{features}
 The feature set of fence-virt is currently quite narrow, but more features are listed
 in the to do list.
 The client or fencing agent running on the cluster node, which wants to fence
 another node, can contact the server over either multicast IP, serial connection or
 tcp. It currently only supports libvirt.
+
 \subsubsection{Fencing}
 fence-virt already supports contacting a fencing daemon or server over
 multicast UDP, TCP, serial connection or VMchannel. The latter two obviously are only
 of use, if all cluster nodes are guests on the same host.
+
 \subsubsection{Frontends}
 \paragraph{multicast}
 If multicast is used, the agent sends out a multicast UDP packet
@@ -42,26 +46,29 @@ be distributed over different \ac{VM} hosts. Addressing the fencing server
 over multicast enables fencing of cluster members whose location is not known.
 For fencing to work, all virtual machine hosts need to run an instance of
 the fencing daemon.
-fence-virt uses the libvirt \ac{API} to fence hosts by sending the apropriate command to libvirtd.
 \paragraph{TCP}
 If the agent is configured to use \ac{TCP} to contact the server,
 it will connect to it using the aforementioned protocol, then authenticate itself and the server,
 followed by the request. Afterwards, it will get the response from the server. It
-then closes the connection. Only \acp{VM} on the contacted server can be fenced.
+then closes the connection.
 \paragraph{Serial}
 If a serial connection is used, the agent opens the serial device and initiates it with the
 configured settings (serial speed, word length, partity and stop bits, ...).
 It then transmits its request and receives the response. Afterwards, it cloes the
-serial port by hanging up. Only \acp{VM} on the local server can be fenced.
+serial port by hanging up.
+There is no authentication, instead, the folder the serial devices are in on the host
+is used to restrict access to the fencing daemon.
 \paragraph{VMchannel}
 VM channel works over a virtual serial device, which is virtualized using libvirt and
 virtio und Linux.
 The client connects to the daemon using Vmchannel and connects to the VM channel IP address,
 as well as the channel port. It then speaks over the channel as over a serial connection.
-Only \acp{VM} on the local server can be fenced.
+There is no authentication, instead, the folder the VM channel devices are in on the host
+is used to restrict access to the fencing daemon.
 %TODO: serial, VMchannel
 %TODO: No support for host names, just UUIDs -> pcmk_host_map
 % fence-virt fencing driver sees UUIDs as ports -> pcmk_host_map ...
+
 \subsubsection{Backends}
 fence-virt supports a variety of backends, with which fencing can be implemented.
 \paragraph{libvirt}
@@ -75,23 +82,67 @@ enables the use of fence-virt on networks, which are not multicast friendly.
 % network Apache QPID message queue
 % message routing protocol
 \paragraph{checkpoint}
-%and the \ac{AIS} Checkpoint \ac{API} to
-%store checkpoints for different times, in which the currently running \acp{VM}
-%are stored and their state. This is needed to ensure, that a \ac{VM} has only
-%been fenced once and to check if a \ac{VM} has been fenced at all.
-\subsubsection{Configuration}
+fence-virt has an additional backend called ''checkpoint'', which uses
+CMAN, CPC and OpenAIS checkpoints to track virtual machines across a cluster, which
+uses CMAN and OpenAIS as cluster stack. The information is stored in checkpoints
+in OpenAIS and is used to route fencing requests to the host, which runs the \ac{VM}
+to be fenced, over the OpenAIS communication layer.
+checkpoint can fence \acp{VM} based on the name or the UUID.
+
+\subsubsection{Configuration of the daemon}
 The fencing daemon (fence\_virtd) takes its configuration largely from
 a configuration file, whose syntax is oriented around curly brackets and 
 sections. The syntax is described in fence\_virt.conf(8)
-Every instance of fence_virtd needs its own configuration file.
+Every instance of fence\_virtd needs its own configuration file.
 Every instance of the daemon can only listen on one frontend and one backend.
 Additionally, there is no possibility to use different credentials on a cluster.
 Therefore, each cluster needs its own instance.
 To prevent a cluster node from fencing other guests, a list of allowed fencing targets
 can be defined, based on the UUID of the guest.
+%TODO: example configuration file 
+\begin{figure}
+\begin{lstlisting}
+fence_virtd {
+        listener = "serial";
+        backend = "libvirt";
+        foreground = "yes";
+}
 
+listeners {
+        multicast {
+                key_file = "/etc/cluster/fence_xvm.key";
+                address = "225.0.0.12";
+                # Needed on Fedora systems
+                interface = "virbr5";
+        }
+        serial {
+                path = "/etc/cluster/mirror/";
+                mode = "serial";
+        }
+}
+
+backends {
+        libvirt { 
+                uri = "qemu:///system";
+        }
+}
+
+groups {
+        group {
+                ip = "192.168.181.66";
+                ip = "192.168.181.67";
+                uuid = "28b9d5e8-f28a-4c5d-9853-e098d2a2a5d1";
+                uuid = "9385d78a-872b-4657-8ae7-7e5ba8b637be";
+        }
+}
+\end{lstlisting}
+\caption{Example configuration file for serial frontend and libvirt backend}
+\end{figure}
+\subsubsection{Configuration of the client}
+fence\_virt can be configurd either through parameters given in stdin or by
+program arguments.
 %TODO: Configuration
-\subsubsection{Security}
+\subsubsection{Security} 
 The multicast packets are authenticated using the shared key, 6 byte of
 randomness from $/dev/urandom$ and a hash function, not a \ac{HMAC}.
 In the subsequent \ac{TCP} connection, the two participants authenticate each other using
