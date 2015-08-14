@@ -174,14 +174,7 @@ attacker to carry out a DOS attack on the cluster by shutting down
 all cluster nodes. The software uses \ac{NSS} to hash the messages
 and currently only supports the \ac{SHA} family of hash algorithms.
 
-%TODO: Hash (no actual hmac), 6 byte rand from urandom
-% https://github.com/ClusterLabs/fence-virt/blob/master/common/simple_auth.c#L68
-% https://github.com/ClusterLabs/fence-virt/blob/master/common/simple_auth.c#L98
-% 	HASH_Begin(h);
-%	HASH_Update(h, key, key_len);
-%	HASH_Update(h, (void *)req, sizeof(*req));
-%	HASH_End(h, hash, &rlen, sizeof(hash));
-%	HASH_Destroy(h);
+The code for the authentication is available at \url{https://github.com/ClusterLabs/fence-virt/blob/master/common/simple_auth.c}.
 
 \subsubsection{Developement}
 %TODO: Note towards many "clean up" or "FIX!" comments in files
