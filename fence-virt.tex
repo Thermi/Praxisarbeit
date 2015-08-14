@@ -15,6 +15,9 @@ in the to do list.
 The client or fencing agent running on the cluster node, which wants to fence
 another node, can contact the server over either multicast IP, serial connection or
 tcp. It currently only supports libvirt.
+The fencing agent can send different operations through the established connection,
+for example a request for the list of running \acp{VM}, to shutdown or reboot a \ac{VM}
+or no operation (null), that is only there to test the connection.
 
 \subsubsection{Fencing}
 fence-virt already supports contacting a fencing daemon or server over
@@ -76,7 +79,7 @@ libvirt is the standard fencing backend and can be used to fence guests, which
 reside on the same host as the recipient of the fencing request.
 % local host libvirt API
 \paragraph{libvirt-qmf}
-The libvirt-qmf backend uses the Apache QPID message broker to route fencing
+The libvirt-qmf backend uses an Apache QPID message broker to route fencing
 requests to the host, which houses the node, that should be fenced. This
 enables the use of fence-virt on networks, which are not multicast friendly.
 % network Apache QPID message queue
@@ -87,7 +90,7 @@ CMAN, CPC and OpenAIS checkpoints to track virtual machines across a cluster, wh
 uses CMAN and OpenAIS as cluster stack. The information is stored in checkpoints
 in OpenAIS and is used to route fencing requests to the host, which runs the \ac{VM}
 to be fenced, over the OpenAIS communication layer.
-checkpoint can fence \acp{VM} based on the name or the UUID.
+Checkpoint can fence \acp{VM} based on the name or the UUID.
 
 \subsubsection{Configuration of the daemon}
 The fencing daemon (fence\_virtd) takes its configuration largely from
@@ -139,8 +142,11 @@ groups {
 \caption{Example configuration file for serial frontend and libvirt backend}
 \end{figure}
 \subsubsection{Configuration of the client}
-fence\_virt can be configurd either through parameters given in stdin or by
-program arguments.
+fence\_virt can be configurd either through parameters given in stdin or
+program arguments. fence\_virt is usually called through pacemaker or stonithd.
+As expected, all the communication methods and necessary settings can be
+configured, as well as the \ac{TTL} for the multicast packets, the 
+retransmit time for those, and the \ac{VM}'s name or UUID.
 %TODO: Configuration
 \subsubsection{Security} 
 The multicast packets are authenticated using the shared key, 6 byte of
