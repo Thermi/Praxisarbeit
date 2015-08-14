@@ -90,7 +90,7 @@ Fedora 23 & 0.9.141 & 1.1.12 & 2.3.5 & 0.3.2 & 4.0.16 \\
 CentOS 6 & 0.9.123 & 1.1.12 & 1.4.7 & 0.2.3 & 3.1.5 \\
 CentOS 7 & 0.9.137 & 1.1.12 & 2.3.4 & 0.3.2 & 4.0.11 \\
 \hline
-SLES 11 HA Extension & Unknown & Yes, version unknown & Unknown & Unknowno & Unknown \\
+SLES 11 HA Extension & Unknown & Yes, version unknown & Unknown & Unknown & Unknown \\
 SLES 12 HA Extension & Unknown & Yes, version unknown & Unknown & Unknown & Unknown \\
 \hline
 Arch Linux & No & Yes & Yes & No & Yes \\
@@ -100,4 +100,15 @@ Arch Linux & No & Yes & Yes & No & Yes \\
 \label{table:SoftwareAvailability}
 When Pacemaker is available, then the fence agents are usually available, too.
 Therefore, there is no additional column for the fence agents.
+\subsubsection{Plausibility of building clusters on different distros}
+The content of \autoref{table:SoftwareAvailability} clearly shows, that different
+distros have different support for clustering. For example, Debian has basicly no support
+for clustering, whereas all distros that are affiliated with Red Hat have very good
+support for it. SLES is a different topic. I could not find out what software exactly
+is used in the different versions, only that clustering is supported. As 
+S.U.S.E Linux Gmbh, the developer of SLES, invested money around the year 2000
+in the development of clustering software, it is plausible that, as usual,
+pacemaker and corosync is used, probably with crm shell.
+Building clusters on Debianoid systems is not possible or advised. This
+includes Ubuntu and Linux Mint.
 \end{table}
