@@ -13,12 +13,27 @@ The services we are going to set up are the following:
 \begin{itemize}
 \item A cluster IP
 \item A lighttpd web server to host an example web site
-\item A shared storage built with DRBD and GFS2
+\item A shared storage built with DRBD and GS2
 \end{itemize}
 
-Because the operating system the hypervisor is running on does
-not offer the necessary software to implement fencing, so this setup will not use it. 
-However, it is greatly advised to use fencing.
+Fencing will be implemented using fence-virt over a serial device
+on the guests.
 
+\subsection{First steps}
+
+% instal required packages
+% set up iptables rules
+% set up hosts file
+% setup hacluster user
+% enable pcsd
+% Generate authkey
+% set up pacemaker and corosync using pcs
+
+\subsection{Setting up the resources}
+% drbd
+% file systems
+% lighttpd
+% stonith
 % Test
 % Performance
+
