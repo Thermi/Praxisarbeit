@@ -149,6 +149,16 @@ of the cLVM volumes over the network.
 
 %TODO: Complete
 \paragraph{Performance Considerations}
+Distributed locking is a lot worse performance wise than purely local locking,
+because the process of locking inodes includes more operations and even the network layer.
+This causes big performance problems when data is written to the file system,
+therefore 
+% DL is much slower than local locking in terms of time, not cpu usage.
+% Cause: Network! (min 0.1 ms delay in a LAN)
+% 00:43 <Thermi> So a characteristica for a use case for GFS2 is data, whose changes need to be propagated immediately, the changes are relatively infrequent and no high I/Os are required.
+
+% TODO: MORE!
+
 Usually, for High Availability clusters, it is sufficient for a cluster file system
 to have at least some performance. In numbers, this means the processing of 
 hundres of transactions, not thousands or more. A tradeoff of performance for
@@ -159,6 +169,7 @@ it easily breaks. Judging from existing performance benchmarks,
 Oracle Linux 5 offers version 1.6 of \ac{OCFS2}, but is a commercial product
 of Oracle and only available together with Oracle's Unbreakable Enterprise
 Kernel, which is in Oracle Linux 5, which prevents the widespread usage of this solution.
+The common public image of Oracle further discourages any use of the file system.
 
 \paragraph{High Availability Considerations}
 For high availability, it is necessary to have a distributed lock manager to prevent
@@ -194,9 +205,8 @@ STONITH or Fencing is an optional feature of a cluster, but needed
 to prevent unwanted I/O operations on a shared medium or a database
 by an unreachable cluster member in a split-brain situation. Usually, this is needed
 and desired in a cluster environment. STONITH or Fencing can be implemented
-through network capable power switches or \acp{BMC} on the motherboards
-of the hosts involved, which can cut the power to the split off hosts or
-if \acp{VM} are used by telling the hypervisor to kill the \ac{VM}.
+through network capable power switches, which can cut the power to the split off hosts or
+if \acp{VM} are used, by telling the hypervisor to kill the \ac{VM}.
 A whole cluster cannot be taken out through fencing or \ac{STONITH}, because
 the decision to fence a host is made through the quorum.
 % TODO: Really?
@@ -210,6 +220,8 @@ off the power of a specific outlet or accessing the \acp{BMC} of the host
 and powering it off that way. Fencing the hosts by $reseting$ the power, not $cutting$
 the power enables the host to recover from an error, if it is related to the operating
 system and can be fixed by a power cycle. This can increase the durability of a cluster.
+Any device that shares power with a node is unsuitable for fencing, because the
+cluster resource manager can not determine if the node was fenced.
 \subsubsection{Network Fencing}
 The second type of fencing is network fencing. It works by disconnecting the host
 from the shared resource on the network layer. This makes sense if a \ac{SAN} or \ac{NAS}
