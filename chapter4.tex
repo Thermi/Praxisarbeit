@@ -85,10 +85,10 @@ Make sure the rules are compliant with the iptables-save format and test it usin
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 -A INPUT -i eth0 -p tcp -m conntrack --ctstate NEW -m tcp --dport 80 -j ACCEPT
--A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
--A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
--A INPUT -i eth2 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
--A INPUT -i eth2 -m addrtype --dst-type MULTICAST -j ACCEPT
+-A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
+-A INPUT -i eth1 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
+-A INPUT -i eth1 -m addrtype --dst-type MULTICAST -j ACCEPT
+-A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-host-prohibited
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
@@ -115,6 +115,7 @@ base64 -d | /etc/corosync/authkey <<EOF
 Foobar
 EOF
 \end{lstlisting}
+\subsubsection{Cluster setup}
 % enable pcsd
 To make pcsd start automaticly, run ''systemctl enable pcsd.service''
 % set up pacemaker and corosync using pcs
@@ -122,6 +123,10 @@ Afterwards, use pcs to set up the cluster on all nodes.
 In the example, the udpu (unicast udp) transport is used for cluster communcation, because it is more resilient.
 It is also possible to use udp multicast in networks, which support it. Using multicast
 instead of unicast takes off load from the nodes when they communicate, because packet duplication is done by the network hardware.
+% cluster setup
+\begin{lstlisting}
+pcs cluster setup
+\end{lstlisting}
 \subsection{Setting up the resources}
 % drbd
 % file systems
