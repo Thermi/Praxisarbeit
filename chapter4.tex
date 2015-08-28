@@ -21,14 +21,107 @@ on the guests.
 
 \subsection{First steps}
 
+\subsubsection{Installation of the distribution and the packages}
+The first steps to building the cluster is to install the operating system on the nodes.
+For that, you need to download the CentOS 7 ISO from the official website\footnote{\url{https://www.centos.org/download/}}.
+Afterwards, install the distribution together with the High Availability extension
+in the infrastructure server part.
+If you did not choose that option, you need to install the packages manually:
 % instal required packages
-% set up iptables rules
+\begin{lstlisting}[language=sh]
+yum install corosync pacemaker pcs
+\end{lstlisting}
+\subsubsection{Network setup}
+\begin{description}
+\item[eth0] Public network
+\item[eth1] Cluster network
+\item[eth2] Management network
+\end{description}
+During the setup, use a suitable hostname for your purpose and set up networking.
+Afterwards, you should set up the firewall rules on the nodes that allow cluster traffic
+on the cluster network adapter and access to the normal services on the public interface.
 % set up hosts file
-% setup hacluster user
-% enable pcsd
-% Generate authkey
-% set up pacemaker and corosync using pcs
+So you can use nice names in the cluster setup, set up the host files on the cluster
+nodes to contain entries for the hostnames. The entries must point to the cluster IPs
+on the cluster internal network.
+\begin{figure}
+\begin{lstlisting}[language=sh]
+#
+# /etc/hosts: static lookup table for host names
+#
 
+#<ip-address>   <hostname.domain.org>   <hostname>
+127.0.0.1       localhost.localdomain   localhost
+::1             localhost.localdomain   localhost
+
+192.168.181.180  c7-testcluster-1
+192.168.181.181  c7-testcluster-2
+192.168.181.182  c7-testcluster-3
+\end{lstlisting}
+\caption{Example hosts file}
+\end{figure}
+Configure the network interfaces using ''nmtui'' and enable them to be configured
+and brought up on boot. Deactivate and reactivate the interface to apply the changes.
+\subsubsection{Security}
+% set up iptables rules
+Afterwards, firewall rules must be set up that allow SSH from the management network
+and the cluster traffic on the cluster network. Install the package''iptables-services'' with
+yum and enable starting the iptables service with ''systemctl enable iptables.service''
+Place the rules in ''/etc/sysconfig/iptables''. 
+Afterwards, disable firewalld, the native firewall manager of CentOS 7 with ''systemctl disable firewalld.service''
+and stop it with ''systemctl stop fiorewalld.service''.
+Make sure the rules are compliant with the iptables-save format and test it using 
+''systemctl start iptables.service''. If you use IPv6, use ip6tables instead of iptables.
+% /etc/sysconfig/iptables.rules,ip6tables.rules
+\begin{lstlisting}
+# sample configuration for iptables service
+# you can edit this manually or use system-config-firewall
+# please do not ask us to add additional ports/services to this default configuration
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i eth0 -p tcp -m conntrack --ctstate NEW -m tcp --dport 80 -j ACCEPT
+-A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
+-A INPUT -i eth2 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
+-A INPUT -i eth2 -m addrtype --dst-type MULTICAST -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+\end{lstlisting}
+%TODO: DRBD port
+% TODO: CIDR network
+% setup hacluster user
+pcsd uses a special unix user account to start, stop and manipulate pacemaker
+and corosync. By default it uses the ''hacluster'' user, which is correctly
+configured on CentOS 7 to allow for correct usage by pcsd.
+The account needs a password, which needs to be set with the ''passwd' utility.
+% Generate authkey
+To secure the cluster traffic, it is possible and advised to encrypt and authenticate
+traffic using a shared rsa key called 'authkey'', that is in /etc/corosync.
+To generate the key, ''corosync-keygen'' must be executed. All nodes need to use the same key.
+Only root must be able to access the file, therefore the owner and group must be ''root''
+and the access rights must the 600. The content of the file is confidential. If it is leaked,
+an attacker could hijack the cluster. To transport the file to the other nodes, you
+can get creative. I base64ed the file and then copy and pasted it over ssh and my
+terminal window to other hosts.
+\begin{lstlisting}
+base64 < /etc/corosync/authkey
+base64 -d | /etc/corosync/authkey <<EOF 
+Foobar
+EOF
+\end{lstlisting}
+% enable pcsd
+To make pcsd start automaticly, run ''systemctl enable pcsd.service''
+% set up pacemaker and corosync using pcs
+Afterwards, use pcs to set up the cluster on all nodes. 
+In the example, the udpu (unicast udp) transport is used for cluster communcation, because it is more resilient.
+It is also possible to use udp multicast in networks, which support it. Using multicast
+instead of unicast takes off load from the nodes when they communicate, because packet duplication is done by the network hardware.
 \subsection{Setting up the resources}
 % drbd
 % file systems
