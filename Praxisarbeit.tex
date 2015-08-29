@@ -27,13 +27,18 @@
 \setstretch{1.3}
 \newcommand{\comment}[1]{}  %comment not shown
 \lstset{
+frame=single,
+columns=flexible,
+numbers=left,
+basicstyle=\ttfamily,
+keywordstyle=\color{blue},
 breaklines=true,
 literate={ö}{{\"o}}1
          {ä}{{\"a}}1
          {ü}{{\"u}}1
          {ß}{{\ss}}2
          {Ä}{{\"A}}1
-         {Ü}{{\"U}}1
+            {Ü}{{\"U}}1
          {Ö}{{\"O}}1
 }
 
