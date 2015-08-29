@@ -25,7 +25,7 @@ on the guests.
 The first steps to building the cluster is to install the operating system on the nodes.
 For that, you need to download the CentOS 7 ISO from the official website\footnote{\url{https://www.centos.org/download/}}.
 Afterwards, install the distribution together with the High Availability extension
-in the infrastructure server part.
+and the guest agents in the infrastructure server part.
 If you did not choose that option, you need to install the packages manually:
 % instal required packages
 \begin{lstlisting}[language=sh]
@@ -71,7 +71,9 @@ Place the rules in ''/etc/sysconfig/iptables''.
 Afterwards, disable firewalld, the native firewall manager of CentOS 7 with ''systemctl disable firewalld.service''
 and stop it with ''systemctl stop fiorewalld.service''.
 Make sure the rules are compliant with the iptables-save format and test it using 
-''systemctl start iptables.service''. If you use IPv6, use ip6tables instead of iptables.
+''systemctl start iptables.service''. 
+If you use IPv6, use ip6tables instead of iptables or additionally to it. It is advised to disable SSH access over IPv6
+by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT'' line from /etc/sysconfig/ip6tables.
 % /etc/sysconfig/iptables.rules,ip6tables.rules
 \begin{lstlisting}
 # sample configuration for iptables service
@@ -85,10 +87,10 @@ Make sure the rules are compliant with the iptables-save format and test it usin
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 -A INPUT -i eth0 -p tcp -m conntrack --ctstate NEW -m tcp --dport 80 -j ACCEPT
--A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
--A INPUT -i eth1 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
--A INPUT -i eth1 -m addrtype --dst-type MULTICAST -j ACCEPT
--A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
+-A INPUT -i eth2 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
+-A INPUT -i eth2 -m addrtype --dst-type MULTICAST -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-host-prohibited
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
@@ -124,9 +126,54 @@ In the example, the udpu (unicast udp) transport is used for cluster communcatio
 It is also possible to use udp multicast in networks, which support it. Using multicast
 instead of unicast takes off load from the nodes when they communicate, because packet duplication is done by the network hardware.
 % cluster setup
+The first step is to auth pcsd to all other nodes:
 \begin{lstlisting}
-pcs cluster setup
+pcs cluster auth c7-testcluster-1 c7-testcluster-2 c7-testcluster-3 -u hacluster
 \end{lstlisting}
+Ten you can setup the cluster
+\begin{lstlisting}
+pcs cluster setup --enable --name c7-testcluster c7-testcluster-1 c7-testcluster-2 c7-testcluster-3 --transport udpu
+\end{lstlisting}
+Then you need to enable encryption and authentication in corosync.conf with the crypto_cipher and crypto_hash
+options in the "totem" section.
+\begin{lstlisting}
+totem {
+version: 2
+crypto_cipher: aes192
+crypto_hash: sha256
+cluster_name: c7-testcluster
+transport: udpu
+}
+
+nodelist {
+  node {
+        ring0_addr: c7-testcluster-1
+        nodeid: 1
+       }
+  node {
+        ring0_addr: c7-testcluster-2
+        nodeid: 2
+       }
+  node {
+        ring0_addr: c7-testcluster-3
+        nodeid: 3
+       }
+}
+
+quorum {
+provider: corosync_votequorum
+
+}
+
+logging {
+to_syslog: yes
+}
+\end{lstlisting}
+Afterwards, run ''pcs cluster sync'' to make pcs synchronize the corosync.conf file
+to all other nodes and reload the configuration.
+Then the cluster must be started with ''pcs cluster start''.
+The cluster will initally complain about missing stonith. This is something we will do at the end
+before we test it.
 \subsection{Setting up the resources}
 % drbd
 % file systems
