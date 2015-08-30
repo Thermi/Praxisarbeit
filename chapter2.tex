@@ -105,9 +105,13 @@ Shared storage on the cluster nodes is a similiar topic to storage are network. 
 that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using TCP.
 
 \paragraph{DRBD}
-DRBD stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
+stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
 It provides data replication over a cluster of two hosts. %TODO: Describe how it works
-As of the time of the writing, DRBD only works good for two nodes, but scales bad beyond it. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members.
+As of the time of the writing, \ac{DRBD} only works good for two nodes, but scales bad beyond it and is not suitable
+for \ac{HA} clustering in such scenarios. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members. The current version of \ac{DRBD} implements replication between more than
+two nodes using stacked resources, which explicitely define the replication between two nodes.
+If the node, that is part of the normal and the stacked resource dies, there is no replication between  the
+remaining two nodes.
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
 endianness=big]{32}
