@@ -18,7 +18,8 @@ The services you are going to set up are the following:
 
 Fencing will be implemented using fence-virt over a serial device
 on the guests.
-
+The obvious options for resources are not explained, because it is clear what they
+do.
 \subsection{First steps}
 
 \subsubsection{Installation of the distribution and the packages}
@@ -124,6 +125,13 @@ base64 -d | /etc/corosync/authkey <<EOF
 Foobar
 EOF
 \end{lstlisting}
+\subsubsection{lighttpd configuration}
+The configuration of lighttpd must be changed to be able to serve the content.
+It is in ''/etc/lighttpd/''. In the setup, I simply stored some files in the web
+server's directory and enabled directory listing to be able to see them all.
+
+\begin{lstlisting}
+\end{lstlisting}
 \subsubsection{Cluster setup}
 % enable pcsd
 To make pcsd start automaticly, run ''systemctl enable pcsd.service''
@@ -198,10 +206,23 @@ the options of it on the hypervisor.
 fdisk /dev/vdb
 mkfs.xfs /dev/vdb1
 \end{lstlisting}
+\paragraph{Cluster IP}
+The cluster IP is an IP that is bound to the public interface of the currently
+active node.
+It is defined using the ''ocf:heartbeat:IPaddr2'' resource agent.
+\begin{lstlisting}
+pcs resource create ClusterIP ocf:heartbeat:IPaddr2 ip=192.168.178.190 cidr_netmask=32 nic=eth0 op monitor interval=5s
+\end{lstlisting}
+''pcs resource show ClusterIP'' shows more information about the resource:
+\begin{lstlisting}
+ Resource: ClusterIP (class=ocf provider=heartbeat type=IPaddr2)
+  Attributes: ip=192.168.178.190 cidr_netmask=32 nic=eth0 
+  Operations: start interval=0s timeout=20s (ClusterIP-start-timeout-20s)
+              stop interval=0s timeout=20s (ClusterIP-stop-timeout-20s)
+              monitor interval=5s (ClusterIP-monitor-interval-5s)
+\end{lstlisting}
 \paragraph{file system}
 The file system is a simple resource of type ''ocf:heartbeat:filesystem''.
-The resource is defined using the class, the device that should be mounted, the mountpoint
-and the filesystem type. Additionally I told pacemaker to monitor the resource in 20 seconds intervals.
 \begin{lstlisting}
 pcs resource create cluster-data ocf:heartbeat:filesystem device=/dev/vdb1 directory=/var/www/mirror/ fstype=xfs op monitor interval=20
 \end{lstlisting}
@@ -209,19 +230,97 @@ pcs resource create cluster-data ocf:heartbeat:filesystem device=/dev/vdb1 direc
 \begin{lstlisting}
  cluster-data	(ocf::heartbeat:Filesystem):	Stopped 
 \end{lstlisting}
-''pcs resource show cluster-data'' shows more information about the resource:
-\begin{lstlisting}
- Resource: cluster-data (class=ocf provider=heartbeat type=Filesystem)
-  Attributes: device=/dev/vdb1 directory=/var/www/mirror/ fstype=xfs 
-  Operations: start interval=0s timeout=60 (cluster-data-start-timeout-60)
-              stop interval=0s timeout=60 (cluster-data-stop-timeout-60)
-              monitor interval=20 (cluster-data-monitor-interval-20)
-\end{lstlisting}
 \paragraph{lighttpd}
-
+The resource standard for lighttpd here is ''systemd'', because there is no resource
+agent available for it that. Instead, the status that systemd reports is used to figure
+out if the resource is still alive.
+\begin{lstlisting}
+pcs resource create lighttpd systemd:lighttpd op monitor interval=6s
+\end{lstlisting}
+\paragraph{grouping and ordering the resources}
+The resources must be grouped and ordered to ensure that they are always
+run on the same host and run in the correct order. The latter is done with order
+constraints.
+Creating a group is fairly straight forward and done with ''pcs resource group add'':
+\begin{lstlisting}
+pcs resource group add lighty ClusterIP cluster-data lighttpd
+\end{lstlisting}
+''pcs resource'' shows the new group:
+\begin{lstlisting}
+ Resource Group: lighty
+     ClusterIP	(ocf::heartbeat:IPaddr2):	Stopped 
+     cluster-data	(ocf::heartbeat:Filesystem):	Stopped 
+     lighttpd	(systemd:lighttpd):	Stopped 
+\end{lstlisting}
+What remains for this paragraph is to define the correct order using ''pcs constraint'':
+\begin{lstlisting}
+pcs constraint order start cluster-data then start lighttpd
+\end{lstlisting}
+The program returns the understood order:
+\begin{lstlisting}
+Adding cluster-data lighttpd (kind: Mandatory) (Options: first-action=start then-action=start)
+\end{lstlisting}
+''pcs constraint'' then shows the orders it has:
+\begin{lstlisting}
+Location Constraints:
+Ordering Constraints:
+  start cluster-data then start lighttpd (kind:Mandatory)
+Colocation Constraints:
+\end{lstlisting}
 \paragraph{stonith}
-\paragraph{ordering the resources}
-\paragrap{cluster test}
+\ac{STONITH} in the cluster is done using fence-virt on the guests and fence-virtd on
+the host.
+This is the host configuration:
+\begin{lstlisting}
+fence_virtd {
+        listener = "serial";
+        backend = "libvirt";
+        foreground = "yes";
+}
+
+listeners {
+        serial {
+                path = "/etc/cluster/clusters/test/";
+                mode = "serial";
+        }
+}
+
+backends {
+        libvirt { 
+                uri = "qemu:///system";
+        }
+}
+
+groups {
+        group {
+                uuid = "248d2268-2512-4a75-8398-cafbab580529";
+                uuid = "c1e36261-a86b-42f5-89f7-8bf78d936d0c";
+                uuid = "653aa17a-d766-455a-b7a0-bdd997ee1d71";
+        }
+}
+
+\end{lstlisting}
+The guest configuration is done in pcs. After starting the daemon, it must be tested
+if communication works. This cone be done by using ''fence\_virt'':
+\begin{lstlisting}
+fence_virt -D /dev/ttyS0 -o list
+\end{lstlisting}
+The command should print a list of running \acp{VM}:
+\begin{lstlisting}
+c7-testcluster-1     248d2268-2512-4a75-8398-cafbab580529 on
+c7-testcluster-2     c1e36261-a86b-42f5-89f7-8bf78d936d0c on
+c7-testcluster-3     653aa17a-d766-455a-b7a0-bdd997ee1d71 on
+\end{lstlisting}
+After manually testing the functionality, the \ac{STONITH} resource can be configure
+using pcs. Fencing is done based on the \ac{UUID} of the \ac{VM}, not based on the name.
+Therefore, a list needs to be configured, which tells pacemaker what cluster node has what 
+\ac{UUID}. That list is the parameter ''pcmk\_host\_map''. The parameter ''pcmk\_host\_check'' tells
+the resource how to figure out what \acs{VM} can be fenced by the resource. That is not necessary here,
+because it is explicitely configured using the host map. Therefore it is set to ''none''.
+\begin{lstlisting}
+pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='c7-testcluster-1:248d2268-2512-4a75-8398-cafbab580529;c7-testcluster-2:c1e36261-a86b-42f5-89f7-8bf78d936d0c;c7-testcluster-3:653aa17a-d766-455a-b7a0-bdd997ee1d71;' pcmk_host_check=none
+\end{lstlisting}
+\paragraph{cluster test}
 % drbd
 % file systems
 % lighttpd
