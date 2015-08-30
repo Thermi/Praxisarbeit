@@ -468,8 +468,8 @@ $ pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='
 The last thing to test are lighttpd, failover and \ac{STONITH}.
 The first thing is tested by simply accessing the website over the configured IP.
 If the files show up and can be downloaded, it's fine.
-\ac{STONITH} can be tested by running ''pcs stonith fence <node>'', where
-''<node>'' stands for the node name.
+\ac{STONITH} can be tested by running ''pcs stonith fenc \textless node\textgreater'', where
+''\textless node\textgreater'' stands for the node name.
 \begin{figure}
 \begin{lstlisting}
 $ pcs stonith fence c7-testcluster-1

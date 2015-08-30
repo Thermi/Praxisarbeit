@@ -18,12 +18,12 @@ While doing maintenance, the node should be put into standby mode, so it is not 
 to fencing action. A fencing action can occur when the maintenance process
 takes up too much CPU time for Corosync to work correctly.
 When a node is put into standby mode, all resources are moved away from it.
-The syntax for pcs is ''pcs cluster standby <node>''. Putting nodes
-into production is done using ''pcs cluster unstandby <node>''.
+The syntax for pcs is ''pcs cluster standby \textless node\textgreater''. Putting nodes
+into production is done using ''pcs cluster unstandby \textless node\textgreater''.
 \paragraph{adding a node}
 From time to time, a cluster needs to be expanded.
-This is done with ''pcs cluster node add <node>''.
+This is done with ''pcs cluster node add \textless node\textgreater''.
 Everything besides the pure Corosync conf needs to be moved to the new
 node manually. This includes the authkey.
 \paragraph{removing a node}
-If a node needs to be removed, use ''pcs cluster node remove <node>''.
+If a node needs to be removed, use ''pcs cluster node remove \textless node\textgreater''.
