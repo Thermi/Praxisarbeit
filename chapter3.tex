@@ -27,7 +27,7 @@ exists since 2004.
 \subsection{Corosync}
 Corosync is a descendent of the older OpenAIS project and is run as a system daemon. The software is open source and licensed under the BSD licenses. It provides group membership communication and enables the cluster members to communicate with each other on the application layer to communicate service outages, corruption and scheduled shutdowns of hosts other hosts. The daemon is written in C and is commonly used on the Linux platform together with pacemaker or cman.
 
-The latest version of corosync as of the time of the writing was $2.3.5$.
+The latest version of Corosync as of the time of the writing was $2.3.5$.
 %TODO: Service structure diagram
 \subsubsection{History}
 \subsubsection{Services}
@@ -38,11 +38,11 @@ Corosync takes up the whole task of managing the cluster and distributing the se
 \item [quorum] Provides notifications of gain or loss of quorum
 \item [sam] Simple Availability Manager
 \end{description}
-The native C API of corosync uses shared memory for high throughput and low 
+The native C API of Corosync uses shared memory for high throughput and low 
 latency and enables the efficient use of the API for mass sending of messages to 
 other cluster members.
 \linebreak[3]
-Corosync can use UDP over IP or Infiniband for communication and supports different 
+Corosync can use \ac{UDP} over IP or Infiniband for communication and supports different 
 rings of communication for redundancy and prevention of false positives in the 
 detection of unresponsive or dead hosts.
 \subsubsection{Locality Constraints}
@@ -61,12 +61,12 @@ action on the host themselves.
 % Aug 04 02:10:10 c7-arch-mirror-1 corosync[1058]: [MAIN  ] Corosync main process was not scheduled for 1217.9677 ms (threshold is 800.0000 ms). Consider token timeout increase.
 
 \subsection{pcs}
-\ac{pcs} is a modern program to configure and maintain clusters made of pacemaker and corosync. It provides a unified command line interface to the configuration options of corosync and pacemaker, which enables the easy configuration of the aforementioned software. pcs manages
-the hosts using a daemon called ''pcsd'', to which the other nodes authenticate using a unix account.
-The daemon runs as root user and manages the \ac{CIB} and the status of pacemaker and corosync on the host.
+\ac{pcs} is a modern program to configure and maintain clusters made of pacemaker and Corosync. It provides a unified command line interface to the configuration options of Corosync and pacemaker, which enables the easy configuration of the aforementioned software. pcs manages
+the hosts using a daemon called ''pcsd'', to which the other nodes authenticate using a Unix account.
+The daemon runs as root user and manages the \ac{CIB} and the status of pacemaker and Corosync on the host.
 When setting up a cluster using pcs, it does not generate an authkey file by default to secure the
 cluster traffic. This must be done to the user, because it takes several minutes.
-The upstram url is \url{https://github.com/feist/pcs}. The software is primarily maintained by Chris Feist of Redhat.
+The upstream url is \url{https://github.com/feist/pcs}. The software is primarily maintained by Chris Feist of Red Hat.
 % pcsd
 % Port 2224 TCP
 % unix account auth
@@ -104,13 +104,13 @@ Arch Linux & No & Yes & Yes & No & Yes \\
 \label{table:SoftwareAvailability}
 \subsubsection{Plausibility of building clusters on different distros}
 The content of \autoref{table:SoftwareAvailability} clearly shows, that different
-distros have different support for clustering. For example, Debian has basicly no support
+distros have different support for clustering. For example, Debian has basically no support
 for clustering, whereas all distros that are affiliated with Red Hat have very good
 support for it. SLES is a different topic. I could not find out what software exactly
 is used in the different versions, only that clustering is supported. As 
 S.U.S.E Linux Gmbh, the developer of SLES, invested money around the year 2000
 in the development of clustering software, it is plausible that, as usual,
-pacemaker and corosync is used, probably with crm shell.
+pacemaker and Corosync is used, probably with crm shell.
 Building clusters on Debianoid systems is not possible or advised. This
 includes Ubuntu and Linux Mint.
 \end{table}
