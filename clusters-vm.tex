@@ -10,6 +10,8 @@ and consistency of the shared storage.
 As the processing capability and network is shared with other \acp{VM},
 overprovisioning of the host \textbf{will} cause problems with the cluster.
 The cluster nodes must be guaranteed to be able to run corosync in time.
+This will cause problems, because the \ac{VM} itself isn't scheduled for real time,
+as is required by corosync.
 In rare cases, the timeout values for the token protocol have to be increased,
 because the hypervisor does not schedule the guest for execution early enough.
 This will case corosync to log warnings over syslog:
