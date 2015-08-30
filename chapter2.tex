@@ -11,7 +11,7 @@ There are two different feasible ways to implement this in a cluster environment
 \end{itemize}
 % TODO: Graphic of the different layers of file storage in a cluster
 Using a storage area network in a cluster environment is good choice as it provides highly available access, if the \ac{SAN} is layed out for high availability. That is the case in enterprise environments. As such, it can be relied upon.
-Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like \ac{NFS} or \ac{CIFS}. For concurrent access to shared storagein a cluster, file systems like \ac{GFS}, \ac{OCFS} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
+Using network access storage is a more common solution for providing access to data in an environment where concurrent access is needed, but cluster file systems are not an option. In such a case, the cluster members would access the data over network protocols like \ac{NFS} or \ac{CIFS}. For concurrent access to shared storage in a cluster, file systems like \ac{GFS}, \ac{OCFS} or CephFS have to be used, as those provide a lock manager, which is needed for data integrity. In the following sections, we will go over some cluster file systems and shared storage providers, as well as Ceph in an extra section.
 \subsection{Storage Area Network}
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
@@ -25,7 +25,7 @@ endianness=big]{32}
 
 % TODO: More information about cluster file systems and their exact characteristica (behaviour during failure, performance, scalability), also: more shared storage providers
 Storage Area Networks are a common concept in enterprises and are mostly implemented with appliances from different vendors, which cluster and provide high availability. The nodes in need of shared storage import the shared storage with iSCSI or other network protocols that the own host's kernel can display as block devices. Over that block device, a cluster file system must be layed over the shared medium to handle concurrent access.
-Obviously, SPoFs in the connection to the SAN must be avoided, for which different solutions can be used.
+Obviously, \acp{SPOF} in the connection to the SAN must be avoided, for which different solutions can be used.
 \subsection{Network Access Storage}
 \begin{bytefield}[boxformatting={\centering\itshape},
 bitwidth=.8em,
@@ -34,15 +34,15 @@ endianness=big]{32}
 \bitbox{32}{Network Protocol (\ac{NFS}, \ac{CIFS}, ...)} \\
 \bitbox{32}{Network Access Storage} \\
 \end{bytefield}
-\ac{NAS} are basicly network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. \ac{NAS} export their data using network file systems like \ac{NFS} or \ac{CIFS}, which provide their own lock manager. This solves concurrency issues. Some \ac{NAS} are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
+\ac{NAS} are basically network hard drives, which provide file storage to other hosts on the network. They do not provide distributed storage like a SAN and are usually not layed out redundantly. \ac{NAS} export their data using network file systems like \ac{NFS} or \ac{CIFS}, which provide their own lock manager. This solves concurrency issues. Some \ac{NAS} are also capable of using other network file systems like iSCSI to provide access to data on the block layer, which enables the use of cluster file systems on top of those block devices.
 
 \subsubsection{\ac{NFS}}
 \ac{NFS} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
 The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
 \paragraph{protocols}
 The \ac{NFS} itself only specifies the \ac{RPC} calls, not the transport protocol.
-\ac{NFS} from version 1 to 3 only works over UDP, but version 4 and onwards also support
-TCP.
+\ac{NFS} from version 1 to 3 only works over \ac{UDP}, but version 4 and onwards also support
+\ac{TCP}.
 \paragraph{performance}
 \ac{NFS} can be faster than \ac{CIFS}, if implemented correctly.
 \paragraph{security}
@@ -53,14 +53,14 @@ TCP.
 \paragraph{lock manager}
 \ac{NFS} from version 1 to 3 has no intrinsic lock manager in the protocol. However, there is the \ac{NLM}
 protocol, which can work together with the \ac{NFS} protocol to provide a lock manager.
-It is a seperate service of \ac{NFS}.
+It is a separate service of \ac{NFS}.
 Version 4 and later of \ac{NFS} provide a native lock manager, which enables concurrent access to the files.
 % Details
 \linebreak[3]
 \ac{NFS} currently does not provide a distributed lock manager, therefore a breakdown
-of communication betweenh the \ac{NFS} client and the \ac{NFS} server will result in stale locks
+of communication between the \ac{NFS} client and the \ac{NFS} server will result in stale locks
 on the server until the connection times out. Also, there is no possibility
-for the deployment of reundant servers. As such, the loss of a single server prevents
+for the deployment of redundant servers. As such, the loss of a single server prevents
 access to the shared resources. This makes it grossly unsuitable for usage in an environment
 where high availability is needed.
 
@@ -73,16 +73,16 @@ of the kernel and can be used to access remote file systems, which are
 either provided by a native Windows host or the smbd and nmbd services for Linux,
 which are provided by the SAMBA project.
 \paragraph{protocols}
-\ac{CIFS} can use TCP or NetBIOS as underlying transport protocols. Nowadays, TCP is
+\ac{CIFS} can use \ac{TCP} or NetBIOS as underlying transport protocols. Nowadays, \ac{TCP} is
 used over port 445.
 \paragraph{performance}
 \ac{CIFS} isn't exactly famous for its performance. Version 1 has severe performance
 problems, which arise from the use of NetBIOS as transport protocol and the
 chattiness of the protocol. Newer versions, starting with 2.0, have increased
-performance through the use of tcp window scalinmg and decreased chattiness, as well
+performance through the use of \ac{TCP} window scalinmg and decreased chattiness, as well
 as client side caches and a redesign of the protocol.
 \paragraph{security}
-\ac{CIFS} is capable of providing native authenticiy through signing of the
+\ac{CIFS} is capable of providing native authenticity through signing of the
 packets and confidentiality through encryption of the packets.
 The key exchange is done through Kerberos, for which a \ac{KDC} is needed.
 \paragraph{lock manager}
@@ -101,14 +101,14 @@ endianness=big]{32}
 \bitbox{32}{Specific Implementation of Shared Storage} \\
 \end{bytefield}
 Shared storage on the cluster nodes is a similiar topic to storage are network. The difference is,
-that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using TCP.
+that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using \ac{TCP}.
 
 \paragraph{DRBD}
 stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
 It provides data replication over a cluster of two hosts.
 As of the time of the writing, \ac{DRBD} only works good for two nodes, but scales bad beyond it and is not suitable
-for \ac{HA} clustering in such scenarios. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members. The current version of \ac{DRBD} implements replication between more than
-two nodes using stacked resources, which explicitely define the replication between two nodes.
+for \ac{HA} clustering in such scenarios. In the next version of \ac{DRBD}, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members. The current version of \ac{DRBD} implements replication between more than
+two nodes using stacked resources, which explicitly define the replication between two nodes.
 If the node, that is part of the normal and the stacked resource dies, there is no replication between  the
 remaining two nodes.
 \begin{bytefield}[boxformatting={\centering\itshape},
@@ -126,20 +126,20 @@ endianness=big]{32}
 
 \subsubsection{Cluster File Systems}
 \paragraph{GFS2}
-\ac{GFS2} is the second iteration of a cluster file system of Redhat, Inc. It provides different lock managers:
+\ac{GFS2} is the second iteration of a cluster file system of Red Hat, Inc. It provides different lock managers:
 \begin{description}
 \item distributed lock manager 
 \item nolock manager
 \end{description}
 \paragraph{GlusterFS}
 \paragraph{OCFS2}
-OCFS2\footnote{Oracle Cluster File System 2} is a cluster file system developed by Oracle.
+\ac{OCFS2} is a cluster file system developed by Oracle.
 Its original purpose was to serve as cluster file system for Oracle's database software.
 It provides POSIX semantics and is part of the Linux kernel since kernel version 2.6.16. 
 
 Its current version is 1.6. Support for it is very limited, because Oracle only
 provides any for it as part of Oracle Linux. SUSE provides support, too, but only
-if it is used on Novell's SUSE Linux Exterprise Server. The tool chain to manage
+if it is used on Novell's SUSE Linux Enterprise Server. The tool chain to manage
 OCFS2 file systems is available on Oracle's web site\footnote{\url{https://oss.oracle.com/projects/ocfs2-tools/}},
 however the tool chain needs patches to compile correctly. Therefore, it is advised
 to look at the rpm source of the working packages for CentOS or other distributions and use those as a basis
@@ -164,11 +164,11 @@ and only few I/O operations are required.
 
 Usually, for High Availability clusters, it is sufficient for a cluster file system
 to have at least some performance. In numbers, this means the processing of 
-hundres of transactions, not thousands or more. A tradeoff of performance for
+hundreds of transactions, not thousands or more. A trade off of performance for
 availability is usually wanted, as a highly performing cluster is useless, if
 it easily breaks. Judging from existing performance benchmarks,
 \ac{OCFS2} performs better than \ac{GFS2} and better than \ac{NFS}, however,
-\ac{OCFS2} has not been developed any further publicy since 2012 and version 1.4.
+\ac{OCFS2} has not been developed any further publicly since 2012 and version 1.4.
 Oracle Linux 5 offers version 1.6 of \ac{OCFS2}, but is a commercial product
 of Oracle and only available together with Oracle's Unbreakable Enterprise
 Kernel, which is in Oracle Linux 5, which prevents the widespread usage of this solution.
@@ -188,11 +188,11 @@ Ceph has a special position in the cluster world, as it provides all aspects of 
 \item object storage
 \end{itemize}
 
-Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents SPoFs\footnote{Single Point Of Failure}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and maintaining performance over an unlimited number of cluster members.
+Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents \acp{SPOF}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and maintaining performance over an unlimited number of cluster members.
 
 Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in. It also provides a gateway for object storage over a REST API and is compliant with the APIs provided by Amazon S3 and Swift.\cite{ceph_architecture}
 
-Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}\cite{crush}.
+Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent \ac{MITM} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}\cite{crush}.
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
 
