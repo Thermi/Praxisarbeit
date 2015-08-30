@@ -1,5 +1,5 @@
 \section{Setting up a HA cluster on Linux}
-This part is about the real wordl installation of an \ac{HA} cluster on Linux using the tools introduced in the former sections.
+This part is about the real world installation of an \ac{HA} cluster on Linux using the tools introduced in the former sections.
 
 \subsection{Cluster architecture}
 For the cluster, you will use 3 CentOS 7 \acp{VM}, which are connected
@@ -80,7 +80,7 @@ and the cluster traffic on the cluster network. Install the package''iptables-se
 yum and enable starting the iptables service with ''systemctl enable iptables.service''
 Place the rules in ''/etc/sysconfig/iptables''. 
 Afterwards, disable firewalld, the native firewall manager of CentOS 7 with ''systemctl disable firewalld.service''
-and stop it with ''systemctl stop fiorewalld.service''.
+and stop it with ''systemctl stop firewalld.service''.
 Make sure the rules are compliant with the iptables-save format and test it using 
 ''systemctl start iptables.service''. 
 If you use IPv6, use ip6tables instead of iptables or additionally to it. It is advised to disable SSH access over IPv6
@@ -107,13 +107,13 @@ by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -
 COMMIT
 \end{lstlisting}
 % setup hacluster user
-pcsd uses a special unix user account to start, stop and manipulate pacemaker
-and corosync. By default it uses the ''hacluster'' user, which is correctly
+pcsd uses a special Unix user account to start, stop and manipulate Pacemaker
+and Corosync. By default it uses the ''hacluster'' user, which is correctly
 configured on CentOS 7 to allow for correct usage by pcsd.
 The account needs a password, which needs to be set with the ''passwd' utility.
 % Generate authkey
 To secure the cluster traffic, it is possible and advised to encrypt and authenticate
-traffic using a shared rsa key called 'authkey'', that is in /etc/corosync.
+traffic using a shared RSA key called 'authkey'', that is in ''/etc/corosync''.
 To generate the key, ''corosync-keygen'' must be executed. All nodes need to use the same key.
 Only root must be able to access the file, therefore the owner and group must be ''root''
 and the access rights must the 600. The content of the file is confidential. If it is leaked,
@@ -248,7 +248,7 @@ pcs cluster start --all
 \subsection{Setting up the resources}
 \paragraph{storage}
 To set up the shared storage, the secondary hard drive must be partitioned
-and formatted first. CentOS 7 provides fdisk and mkfs.xfs, which
+and formatted first. CentOS 7 provides ''fdisk'' and ''mkfs.xfs'', which
 can be used to do that. Create a maximum size partition on the secondary hard drive
 and partition it with xfs. For the shared virtual hard drive, I disabled caching in
 the options of it on the hypervisor.
