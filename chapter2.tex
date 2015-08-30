@@ -39,13 +39,12 @@ endianness=big]{32}
 \subsubsection{\ac{NFS}}
 \ac{NFS} is a distributed file system protocol, which is deployed widely on Linux and UNIX. 
 The latest version is 4.1 and is openly standardized in RFCs, so anyone can implement it.
-%TODO: Protocols, performance, set up
-%TODO: Write down all the RFCs for it
 \paragraph{protocols}
 The \ac{NFS} itself only specifies the \ac{RPC} calls, not the transport protocol.
 \ac{NFS} from version 1 to 3 only works over UDP, but version 4 and onwards also support
 TCP.
 \paragraph{performance}
+\ac{NFS} can be faster than \ac{CIFS}, if implemented correctly.
 \paragraph{security}
 \ac{NFS} has several different security mechanisms
 % ACL / UID UNIX
@@ -106,7 +105,7 @@ that the block devices are stored locally on each cluster node and not in a Stor
 
 \paragraph{DRBD}
 stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
-It provides data replication over a cluster of two hosts. %TODO: Describe how it works
+It provides data replication over a cluster of two hosts.
 As of the time of the writing, \ac{DRBD} only works good for two nodes, but scales bad beyond it and is not suitable
 for \ac{HA} clustering in such scenarios. In the next version of DRBD, support vor arbitrary numbers of cluster members will be added, which enables cheap shared storage for multiple cluster members. The current version of \ac{DRBD} implements replication between more than
 two nodes using stacked resources, which explicitely define the replication between two nodes.
@@ -137,7 +136,7 @@ endianness=big]{32}
 OCFS2\footnote{Oracle Cluster File System 2} is a cluster file system developed by Oracle.
 Its original purpose was to serve as cluster file system for Oracle's database software.
 It provides POSIX semantics and is part of the Linux kernel since kernel version 2.6.16. 
-%TODO: Complete
+
 \linebreak[3]
 Its current version is 1.6. Support for it is very limited, because Oracle only
 provides any for it as part of Oracle Linux. SUSE provides support, too, but only
@@ -156,7 +155,8 @@ of the cLVM volumes over the network.
 Distributed locking is a lot worse performance wise than purely local locking,
 because the process of locking inodes includes more operations and even the network layer.
 This causes big performance problems when data is written to the file system,
-therefore 
+therefore cluster file systems should only be used when changes need to be propagated immediately
+and only few I/O operations are required.
 % DL is much slower than local locking in terms of time, not cpu usage.
 % Cause: Network! (min 0.1 ms delay in a LAN)
 % 00:43 <Thermi> So a characteristica for a use case for GFS2 is data, whose changes need to be propagated immediately, the changes are relatively infrequent and no high I/Os are required.
@@ -191,9 +191,9 @@ Ceph has a special position in the cluster world, as it provides all aspects of 
 
 Ceph is an open source cluster storage platform to provide block, file and object storage to other hosts. It is constructed in a manner that prevents SPoFs\footnote{Single Point Of Failure}, scales well to exabyte levels and provides redundancy to prevent data loss. It is capable of distributing the data across the cluster members and maintaining performance over an unlimited number of cluster members.
 
-Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in. It also provides a gateway for object storage over a REST API and is compliant with the APIs provided by Amazon S3 and Swift.% TODO: Cite!
+Ceph can be used as shared storage provider, over which an arbitrary cluster file system can be layed, but also completely with CephFS as complete shared storage solution. Furthermore, it can be used as storage backend for libvirt and qemu to store virtual machines in. It also provides a gateway for object storage over a REST API and is compliant with the APIs provided by Amazon S3 and Swift.\cite{ceph_architecture}
 
-Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}.
+Users authenticate themselves to the cluster using a mechanism that utilises shared keys and provides authenticity to prevent MITM\footnote{Man In The Middle} attacks. However, no secrecy or replay protection is provided\cite{ceph_architecture}\cite{crush}.
 
 Ceph is capable of distributing copies of stored objects over the cluster, as well as striping and dynamically moving the objects to balance the load on the different hosts in the storage cluster. A such, it is a perfect solution for large storage clusters.
 
@@ -204,16 +204,14 @@ Ceph is capable of distributing copies of stored objects over the cluster, as we
 Fencing and STONITH basicly describe the same thing: The prevention of I/O-Operations of a disconnected/misbehaving host in the cluster.
 For this purpose, two different key words have been established: Fencing and \ac{STONITH}.
 \subsection{Usage}
-% TODO: Include information about reboot, which can potentially fix the problem.
 STONITH or Fencing is an optional feature of a cluster, but needed
 to prevent unwanted I/O operations on a shared medium or a database
 by an unreachable cluster member in a split-brain situation. Usually, this is needed
 and desired in a cluster environment. STONITH or Fencing can be implemented
 through network capable power switches, which can cut the power to the split off hosts or
 if \acp{VM} are used, by telling the hypervisor to kill the \ac{VM}.
-A whole cluster cannot be taken out through fencing or \ac{STONITH}, because
-the decision to fence a host is made through the quorum.
-% TODO: Really?
+Ususally, a reboot of the node is sufficient to fix the problem.
+
 \subsection{Fencing classes}
 There are difference ways that fencing can be implemented in.
 \subsubsection{Power Fencing}
