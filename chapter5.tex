@@ -1,8 +1,16 @@
-\section{Special use cases}
-\subsection{High Availability for IPsec}
-
-% Sequence number moves too fast
-% kernel patch for clusterip target
-% multicast group
-% strongswan
-
+\section{maintaining a cluster}
+Maintaining a cluster is a completely different story from setting one up.
+\paragraph{maintenance}
+While doing maintenance, the node should be put into standby mode, so it is not suspect
+to fencing action. A fencing action can occur when the maintenance process
+takes up too much CPU time for corosync to work correctly.
+When a node is put into standby mode, all resources are moved away from it.
+The syntax for pcs is ''pcs cluster standby <node>''. Putting nodes
+into production is done using ''pcs cluster unstandby <node>''.
+\paragraph{adding a node}
+From time to time, a cluster needs to be expanded.
+This is done with ''pcs cluster node add <node>''.
+Everything besides the pure corosync conf needs to be moved to the new
+node manually. This includes the authkey.
+\paragraph{removing a node}
+If a node needs to be removed, use ''pcs cluster node remove <node>''.
