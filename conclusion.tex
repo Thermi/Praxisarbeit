@@ -1,0 +1,14 @@
+\section{Conclusion}
+Based on my last experiences, clustering on Linux has adulterated in the 
+last 15 years, at least for small clusters. The complexity is not
+overwhelming and the concepts are easy to grasp. The configuration is made
+easier by using ''pcs'', which eases many tasks. It still lacks support
+for clustering of resources in different geographical locations like colocations.
+This can be implemented using ''booth''\footnote{\url{https://github.com/ClusterLabs/booth}}.
+Easy and cheap replication of data over different nodes is not available, but should
+be in the near future through \ac{DRBD}. The current lack of cheap replication
+makes building a cluster with shared storage, but without a SAN, not suitable
+for production. Building clusters is only supported on platforms provided
+by Red Hat (RHEL, CentOS, Fedora, ...) or SUSE (openSUSE, SLES).
+All in all, clustering on Linux is suitable for businesses now, even without
+paying experts for integration.
