@@ -180,7 +180,6 @@ include "conf.d/mime.conf"
 
 server.follow-symlink = "enable"
 server.upload-dirs = ( "/var/tmp" )
-
 \end{lstlisting}
 \subsubsection{Cluster setup}
 % enable pcsd
@@ -255,6 +254,15 @@ the options of it on the hypervisor.
 \begin{lstlisting}
 fdisk /dev/vdb
 mkfs.xfs /dev/vdb1
+\end{lstlisting}
+Afterwards, mount the device to ''/mnt'', fill it with data and change the SElinux context, so the 
+webserver can access it to ''system_u:object_r:httpd_sys_content_t:s0'' with ''chcon''.
+Then unmount it.
+\begin{lstlisting}
+mount /dev/vdb1 /mnt
+touch /mnt/foobar
+chcon -R system_u:object_r:httpd_sys_content_t:s0 /mnt
+umount /mnt
 \end{lstlisting}
 \paragraph{Cluster IP}
 The cluster IP is an IP that is bound to the public interface of the currently
