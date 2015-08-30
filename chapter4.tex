@@ -22,6 +22,8 @@ The obvious options for resources are not explained, because it is clear what th
 do.
 \subsection{First steps}
 
+Changes to the file system must always be done on each node.
+Changes to the cluster configuration must only be done once.
 \subsubsection{Installation of the distribution and the packages}
 The first steps to building the cluster is to install the operating system on the nodes.
 For that, you need to download the CentOS 7 ISO from the official website\footnote{\url{https://www.centos.org/download/}}.
@@ -360,7 +362,7 @@ groups {
 The guest configuration is done in pcs. After starting the daemon, it must be tested
 if communication works. This cone be done by using ''fence\_virt'':
 \begin{lstlisting}
-fence_virt -D /dev/ttyS0 -o list
+$ fence_virt -D /dev/ttyS0 -o list
 \end{lstlisting}
 The command should print a list of running \acp{VM}:
 \begin{lstlisting}
@@ -375,14 +377,57 @@ Therefore, a list needs to be configured, which tells pacemaker what cluster nod
 the resource how to figure out what \acs{VM} can be fenced by the resource. That is not necessary here,
 because it is explicitely configured using the host map. Therefore it is set to ''none''.
 \begin{lstlisting}
-pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='c7-testcluster-1:248d2268-2512-4a75-8398-cafbab580529;c7-testcluster-2:c1e36261-a86b-42f5-89f7-8bf78d936d0c;c7-testcluster-3:653aa17a-d766-455a-b7a0-bdd997ee1d71;' pcmk_host_check=none
+$ pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='c7-testcluster-1:248d2268-2512-4a75-8398-cafbab580529;c7-testcluster-2:c1e36261-a86b-42f5-89f7-8bf78d936d0c;c7-testcluster-3:653aa17a-d766-455a-b7a0-bdd997ee1d71;' pcmk_host_check=none
 \end{lstlisting}
 \paragraph{cluster test}
+The last thing to test are lighttpd, failover and \ac{STONITH}.
+The first thing is tested by simply accessing the website over the configured IP.
+If the files show up and can be downloaded, it's fine.
+\ac{STONITH} can be tested by running ''pcs stonith fence <node>'', where
+''<node>'' stands for the node name.
+\begin{lstlisting}
+$ pcs stonith fence c7-testcluster-1
+\end{lstlisting}
+This command also tests for functional failover, if the node of lighttpd is fenced.
+\begin{lstlisting}
+$ pcs stonith fence c7-testcluster-1
+Node: c7-testcluster-1 fenced
+$ pcs status
+Cluster name: c7-testcluster
+Last updated: Sun Aug 30 19:04:59 2015
+Last change: Sun Aug 30 19:04:31 2015
+Stack: corosync
+Current DC: c7-testcluster-3 (3) - partition with quorum
+Version: 1.1.12-a14efad
+3 Nodes configured
+4 Resources configured
 
-% drbd
-% file systems
-% lighttpd
-% stonith
-% Test
-% Performance
+
+Online: [ c7-testcluster-2 c7-testcluster-3 ]
+OFFLINE: [ c7-testcluster-1 ]
+
+Full list of resources:
+
+ Resource Group: lighty
+     ClusterIP	(ocf::heartbeat:IPaddr2):	Started c7-testcluster-2 
+     cluster-data	(ocf::heartbeat:Filesystem):	Started c7-testcluster-2 
+     lighttpd	(systemd:lighttpd):	Started c7-testcluster-2 
+ fencing	(stonith:fence_virt):	Started c7-testcluster-2 
+
+Failed actions:
+    fencing_start_0 on c7-testcluster-3 'unknown error' (1): call=18, status=Error, exit-reason='none', last-rc-change='Sun Aug 30 18:56:13 2015', queued=0ms, exec=1040ms
+
+
+PCSD Status:
+  c7-testcluster-1: Offline
+  c7-testcluster-2: Online
+  c7-testcluster-3: Online
+
+Daemon Status:
+  corosync: active/enabled
+  pacemaker: active/enabled
+  pcsd: active/enabled
+\end{lstlisting}
+c7-testcluster-1 was fenced correctly and the resources are now all started on c7-testcluster-2.
+Looks like everything is finished. Fin!
 
