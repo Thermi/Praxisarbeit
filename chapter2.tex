@@ -79,7 +79,7 @@ used over port 445.
 \ac{CIFS} isn't exactly famous for its performance. Version 1 has severe performance
 problems, which arise from the use of NetBIOS as transport protocol and the
 chattiness of the protocol. Newer versions, starting with 2.0, have increased
-performance through the use of \ac{TCP} window scalinmg and decreased chattiness, as well
+performance through the use of \ac{TCP} window scaling and decreased chattiness, as well
 as client side caches and a redesign of the protocol.
 \paragraph{security}
 \ac{CIFS} is capable of providing native authenticity through signing of the
@@ -101,7 +101,7 @@ endianness=big]{32}
 \bitbox{32}{Specific Implementation of Shared Storage} \\
 \end{bytefield}
 Shared storage on the cluster nodes is a similiar topic to storage are network. The difference is,
-that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is DRBD, which replicates data over the network using \ac{TCP}.
+that the block devices are stored locally on each cluster node and not in a Storage Area Network. In such a scenario, data replication has to be taken care of by the system's kernel or another application. A solution for this on Linux is \ac{DRBD}, which replicates data over the network using \ac{TCP}.
 
 \paragraph{DRBD}
 stands for Dynamic Redundant Block Devices and is an open source technology developed by LINBIT.
