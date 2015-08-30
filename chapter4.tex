@@ -2,18 +2,18 @@
 This part is about the real wordl installation of an \ac{HA} cluster on Linux using the tools introduced in the former sections.
 
 \subsection{Cluster architecture}
-For the cluster, we will use 3 CentOS 7 \acp{VM}, which are connected
+For the cluster, you will use 3 CentOS 7 \acp{VM}, which are connected
 to three \acp{VLAN}: 
 \begin{itemize}
 \item 192.168.178.0/24 for public cluster resources
 \item 192.168.180.0/24 for the management of the clusters
 \item 192.168.181.64/27 for the cluster communication
 \end{itemize}
-The services we are going to set up are the following:
+The services you are going to set up are the following:
 \begin{itemize}
 \item A cluster IP
 \item A lighttpd web server to host an example web site
-\item A shared storage built with DRBD and GS2
+\item A storage built with a shared virtual hard drive and xfs
 \end{itemize}
 
 Fencing will be implemented using fence-virt over a serial device
@@ -30,6 +30,14 @@ If you did not choose that option, you need to install the packages manually:
 % instal required packages
 \begin{lstlisting}[language=sh]
 yum install corosync pacemaker pcs
+\end{lstlisting}
+You need to install the \ac{epel} repository to get lighttpd package
+\begin{lstlisting}
+yum install epel-release
+\end{lstlisting}
+Now install lighttpd:
+\begin{lstlisting}
+yum install lighttpd
 \end{lstlisting}
 \subsubsection{Network setup}
 \begin{description}
@@ -88,14 +96,13 @@ by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -
 -A INPUT -i lo -j ACCEPT
 -A INPUT -i eth0 -p tcp -m conntrack --ctstate NEW -m tcp --dport 80 -j ACCEPT
 -A INPUT -i eth1 -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
--A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,7788,7799,21064 -j ACCEPT
+-A INPUT -i eth2 -p tcp -m conntrack --ctstate NEW -m multiport --dports 2224,21064 -j ACCEPT
 -A INPUT -i eth2 -p udp -m conntrack --ctstate NEW -m udp --dport 5405 -j ACCEPT
 -A INPUT -i eth2 -m addrtype --dst-type MULTICAST -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-host-prohibited
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
 \end{lstlisting}
-%TODO: DRBD port
 % TODO: CIDR network
 % setup hacluster user
 pcsd uses a special unix user account to start, stop and manipulate pacemaker
@@ -175,13 +182,46 @@ pcs cluster sync
 \end{lstlisting}
 to all other nodes and reload the configuration.
 Then the cluster must be started with ''pcs cluster start''.
-The cluster will initally complain about missing stonith. This is something we will do at the end
-before we test it.
+The cluster will initally complain about missing stonith. This is something you will do at the end
+before you test it.
 \begin{lstlisting}
-pcs cluster start
+pcs cluster start --all
 \end{lstlisting}
 \subsection{Setting up the resources}
-% elrepo
+\paragraph{storage}
+To set up the shared storage, the secondary hard drive must be partitioned
+and formatted first. CentOS 7 provides fdisk and mkfs.xfs, which
+can be used to do that. Create a maximum size partition on the secondary hard drive
+and partition it with xfs. For the shared virtual hard drive, I disabled caching in
+the options of it on the hypervisor.
+\begin{lstlisting}
+fdisk /dev/vdb
+mkfs.xfs /dev/vdb1
+\end{lstlisting}
+\paragraph{file system}
+The file system is a simple resource of type ''ocf:heartbeat:filesystem''.
+The resource is defined using the class, the device that should be mounted, the mountpoint
+and the filesystem type. Additionally I told pacemaker to monitor the resource in 20 seconds intervals.
+\begin{lstlisting}
+pcs resource create cluster-data ocf:heartbeat:filesystem device=/dev/vdb1 directory=/var/www/mirror/ fstype=xfs op monitor interval=20
+\end{lstlisting}
+''pcs resource'' shows the resource:
+\begin{lstlisting}
+ cluster-data	(ocf::heartbeat:Filesystem):	Stopped 
+\end{lstlisting}
+''pcs resource show cluster-data'' shows more information about the resource:
+\begin{lstlisting}
+ Resource: cluster-data (class=ocf provider=heartbeat type=Filesystem)
+  Attributes: device=/dev/vdb1 directory=/var/www/mirror/ fstype=xfs 
+  Operations: start interval=0s timeout=60 (cluster-data-start-timeout-60)
+              stop interval=0s timeout=60 (cluster-data-stop-timeout-60)
+              monitor interval=20 (cluster-data-monitor-interval-20)
+\end{lstlisting}
+\paragraph{lighttpd}
+
+\paragraph{stonith}
+\paragraph{ordering the resources}
+\paragrap{cluster test}
 % drbd
 % file systems
 % lighttpd
