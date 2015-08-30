@@ -129,8 +129,58 @@ EOF
 The configuration of lighttpd must be changed to be able to serve the content.
 It is in ''/etc/lighttpd/''. In the setup, I simply stored some files in the web
 server's directory and enabled directory listing to be able to see them all.
-
+I stored the configuration file as ''/etc/lighttpd/mirror.conf'' and rewrote
+the systemd service file for lighttpd to use the new configuration file by
+copying ''/usr/lib/systemd/system/lighttpd.service'' to ''/etc/systemd/system/lighttpd.service''
+and changing the ''-F'' parameter in the ''ExecStart'' line to my new configuration file.
 \begin{lstlisting}
+var.log_root    = "/var/log/lighttpd"
+var.server_root = "/var/www/mirror"
+var.state_dir   = "/var/run"
+var.home_dir    = "/var/lib/lighttpd"
+var.conf_dir    = "/etc/lighttpd"
+
+server.modules = (
+        "mod_access",
+        "mod_accesslog"
+        )
+
+server.port = 80
+server.use-ipv6 = "disable"
+server.username  = "lighttpd"
+server.groupname = "lighttpd"
+server.document-root = server_root + "/mirror"
+server.pid-file = state_dir + "/lighttpd.pid"
+server.errorlog             = log_root + "/error.log"
+
+accesslog.filename          = log_root + "/access.log"
+
+dir-listing.activate      = "enable"
+dir-listing.hide-dotfiles = "disable"
+dir-listing.exclude       = ( "~$" )
+dir-listing.encoding = "UTF-8"
+dir-listing.hide-header-file = "disable"
+dir-listing.show-header = "disable"
+dir-listing.hide-readme-file = "disable"
+dir-listing.show-readme = "disable"
+
+server.event-handler = "linux-sysepoll"
+server.network-backend = "linux-sendfile"
+server.stat-cache-engine = "simple"
+server.max-connections = 1024
+index-file.names += (
+  "index.xhtml", "index.html", "index.htm", "default.htm", "index.php"
+)
+url.access-deny             = ( "~", ".inc" )
+$HTTP["url"] =~ "\.pdf$" {
+  server.range-requests = "disable"
+}
+static-file.exclude-extensions = ( ".php", ".pl", ".fcgi", ".scgi" )
+include "conf.d/mime.conf"
+
+server.follow-symlink = "enable"
+server.upload-dirs = ( "/var/tmp" )
+
 \end{lstlisting}
 \subsubsection{Cluster setup}
 % enable pcsd
