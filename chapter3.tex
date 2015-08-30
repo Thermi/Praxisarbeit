@@ -8,7 +8,18 @@ This includes starting, stopping and monitoring the resources.
 Pacemaker is a ressource manager for \ac{HA} clusters. Every node in a cluster
 runs an instance of it. It detects failures of system daemons and the physical or
 virtual host itself. Also, it handles the complex relationship between the different
-services and resources, which are formulated by the administrator.
+services and resources, which are formulated by the administrator. Pacemaker
+manages resources using resource agents, which are binaries or scripts,
+that are run with different parameters and return standardized return codes,
+from which Pacemaker figures out the status of the resource. There exist many
+resource agents for different purposes and based on different standards. One
+such standard is ''ocf''. Others are ''lsb'', ''service'', ''systemd'' or ''stonith''.
+''lsb'' and ''systemd'' are simple wrappers around \ac{lsb} compliant init scripts,
+and hence the normal init system, or systemd. ''stonith'' are scripts for \ac{STONITH}
+resources and ''ocf'' are an extension of the ''lsb'' standard.
+Special resource agents are ususally much superior to ''lsb'' or ''systemd'' resource
+agents, because they can perform checks on the actual functionality of the service instead
+of the reported status.
 Pacemaker uses the communication facilities, which are provided by Corosync
 to communicate with the Pacemaker instances on the other nodes. It is primarily written in C.
 \subsubsection{History}
