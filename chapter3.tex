@@ -67,7 +67,7 @@ paths between the hosts, e.g: physical networks} to detect a failure
 in the network infrastructure between the host, but not actually causing any failover
 action on the host themselves.
 
-\subsection{pcs}
+\subsection{PCS}
 \ac{pcs} is a modern program to configure and maintain clusters made of pacemaker and Corosync. It provides a unified command line interface to the configuration options of Corosync and pacemaker, which enables the easy configuration of the aforementioned software. pcs manages
 the hosts using a daemon called ''pcsd'', to which the other nodes authenticate using a Unix account.
 The daemon runs as root user and manages the \ac{CIB} and the status of pacemaker and Corosync on the host.
@@ -107,8 +107,8 @@ SLES 12 HA Extension & No & Yes, version unknown & Unknown & Unknown & Unknown \
 Arch Linux & No & Yes & Yes & No & Yes \\
 \lasthline
 \end{tabular}
-\caption{Software Availability}
 \label{table:SoftwareAvailability}
+\caption{Software Availability}
 \subsubsection{Plausibility of building clusters on different distros}
 The content of \autoref{table:SoftwareAvailability} clearly shows, that different
 distros have different support for clustering. For example, Debian has basically no support
