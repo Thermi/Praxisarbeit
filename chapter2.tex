@@ -137,7 +137,6 @@ OCFS2\footnote{Oracle Cluster File System 2} is a cluster file system developed 
 Its original purpose was to serve as cluster file system for Oracle's database software.
 It provides POSIX semantics and is part of the Linux kernel since kernel version 2.6.16. 
 
-\linebreak[3]
 Its current version is 1.6. Support for it is very limited, because Oracle only
 provides any for it as part of Oracle Linux. SUSE provides support, too, but only
 if it is used on Novell's SUSE Linux Exterprise Server. The tool chain to manage
@@ -247,5 +246,8 @@ or hanging.
 \input{fence-virt}
 \section{Quorum}
 Quroum (plural quora) in the cluster world describes the minimum number
-of hosts in a group that the cluster requires to function. This is important to 
+of hosts in a group that the cluster requires to function. If a split-brain situation
+occurs where the cluster split in two, quorum is important to figure
+out which part of the cluster should continue to operate.
+A quorum is achieved when more than half of the nodes are reachable.
 %TODO: Finish
