@@ -104,7 +104,6 @@ by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
 \end{lstlisting}
-% TODO: CIDR network
 % setup hacluster user
 pcsd uses a special unix user account to start, stop and manipulate pacemaker
 and corosync. By default it uses the ''hacluster'' user, which is correctly
@@ -256,7 +255,7 @@ fdisk /dev/vdb
 mkfs.xfs /dev/vdb1
 \end{lstlisting}
 Afterwards, mount the device to ''/mnt'', fill it with data and change the SElinux context, so the 
-webserver can access it to ''system_u:object_r:httpd_sys_content_t:s0'' with ''chcon''.
+webserver can access it to ''system\_u:object\_r:httpd\_sys\_content\_t:s0'' with ''chcon''.
 Then unmount it.
 \begin{lstlisting}
 mount /dev/vdb1 /mnt
@@ -379,6 +378,7 @@ because it is explicitely configured using the host map. Therefore it is set to 
 pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='c7-testcluster-1:248d2268-2512-4a75-8398-cafbab580529;c7-testcluster-2:c1e36261-a86b-42f5-89f7-8bf78d936d0c;c7-testcluster-3:653aa17a-d766-455a-b7a0-bdd997ee1d71;' pcmk_host_check=none
 \end{lstlisting}
 \paragraph{cluster test}
+
 % drbd
 % file systems
 % lighttpd
