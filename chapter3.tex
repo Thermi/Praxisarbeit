@@ -19,7 +19,10 @@ and hence the normal init system, or systemd. ''stonith'' are scripts for \ac{ST
 resources and ''ocf'' are an extension of the ''lsb'' standard.
 Special resource agents are ususally much superior to ''lsb'' or ''systemd'' resource
 agents, because they can perform checks on the actual functionality of the service instead
-of the reported status.
+of the reported status. One example for such a special resource agent is the one for ''Apache'' Web server,  
+which follows the ''ocf'' standard. It checks the status page of the web server by loading it.
+In contrast, a resource agent following the ''lsb'' standard would only be able to check
+if the ''Apache'' process is running, not if it actually functional.
 Pacemaker uses the communication facilities, which are provided by Corosync
 to communicate with the Pacemaker instances on the other nodes. It is primarily written in C.
 \subsubsection{History}
