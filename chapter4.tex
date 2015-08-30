@@ -86,6 +86,7 @@ Make sure the rules are compliant with the iptables-save format and test it usin
 If you use IPv6, use ip6tables instead of iptables or additionally to it. It is advised to disable SSH access over IPv6
 by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT'' line from /etc/sysconfig/ip6tables.
 % /etc/sysconfig/iptables.rules,ip6tables.rules
+\begin{figure}
 \begin{lstlisting}
 # sample configuration for iptables service
 # you can edit this manually or use system-config-firewall
@@ -106,6 +107,8 @@ by removing the ''-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
 \end{lstlisting}
+\caption{Example firewall rules}
+\end{figure}
 % setup hacluster user
 pcsd uses a special Unix user account to start, stop and manipulate Pacemaker
 and Corosync. By default it uses the ''hacluster'' user, which is correctly
@@ -120,12 +123,15 @@ and the access rights must the 600. The content of the file is confidential. If 
 an attacker could hijack the cluster. To transport the file to the other nodes, you
 can get creative. I base64ed the file and then copy and pasted it over ssh and my
 terminal window to other hosts.
+\begin{figure}
 \begin{lstlisting}
 base64 < /etc/corosync/authkey
 base64 -d | /etc/corosync/authkey <<EOF 
 Foobar
 EOF
 \end{lstlisting}
+\caption{Command lines to transport authkey}
+\end{figure}
 \subsubsection{lighttpd configuration}
 The configuration of lighttpd must be changed to be able to serve the content.
 It is in ''/etc/lighttpd/''. In the setup, I simply stored some files in the web
@@ -134,6 +140,7 @@ I stored the configuration file as ''/etc/lighttpd/mirror.conf'' and rewrote
 the systemd service file for lighttpd to use the new configuration file by
 copying ''/usr/lib/systemd/system/lighttpd.service'' to ''/etc/systemd/system/lighttpd.service''
 and changing the ''-F'' parameter in the ''ExecStart'' line to my new configuration file.
+\begin{figure}
 \begin{lstlisting}
 var.log_root    = "/var/log/lighttpd"
 var.server_root = "/var/www/mirror"
@@ -182,6 +189,8 @@ include "conf.d/mime.conf"
 server.follow-symlink = "enable"
 server.upload-dirs = ( "/var/tmp" )
 \end{lstlisting}
+\caption{lighttpd configuration}
+\end{figure}
 \subsubsection{Cluster setup}
 % enable pcsd
 To make pcsd start automaticly, run ''systemctl enable pcsd.service''
@@ -192,15 +201,22 @@ It is also possible to use udp multicast in networks, which support it. Using mu
 instead of unicast takes off load from the nodes when they communicate, because packet duplication is done by the network hardware.
 % cluster setup
 The first step is to auth pcsd to all other nodes:
+\begin{figure}
 \begin{lstlisting}
 pcs cluster auth c7-testcluster-1 c7-testcluster-2 c7-testcluster-3 -u hacluster
 \end{lstlisting}
+\caption{pcs cluster auth example}
+\end{figure}
 Ten you can setup the cluster
+\begin{figure}
 \begin{lstlisting}
 pcs cluster setup --enable --name c7-testcluster c7-testcluster-1 c7-testcluster-2 c7-testcluster-3 --transport udpu
 \end{lstlisting}
+\caption{pcs cluster setup example}
+\end{figure}
 Then you need to enable encryption and authentication in corosync.conf with the crypto\_cipher and crypto\_hash
 options in the "totem" section.
+\begin{figure}
 \begin{lstlisting}
 totem {
 version: 2
@@ -234,17 +250,25 @@ logging {
 to_syslog: yes
 }
 \end{lstlisting}
+\caption{corossync example configuration}
+\end{figure}
 Afterwards, run ''pcs cluster sync'' to make pcs synchronize the corosync.conf file
+\begin{figure}
 \begin{lstlisting}
 pcs cluster sync
 \end{lstlisting}
+\caption{pcs cluster sync example}
+\end{figure}
 to all other nodes and reload the configuration.
 Then the cluster must be started with ''pcs cluster start''.
 The cluster will initally complain about missing stonith. This is something you will do at the end
 before you test it.
+\begin{figure}
 \begin{lstlisting}
 pcs cluster start --all
 \end{lstlisting}
+\caption{pcs cluster start example}
+\end{figure}
 \subsection{Setting up the resources}
 \paragraph{storage}
 To set up the shared storage, the secondary hard drive must be partitioned
@@ -252,27 +276,37 @@ and formatted first. CentOS 7 provides ''fdisk'' and ''mkfs.xfs'', which
 can be used to do that. Create a maximum size partition on the secondary hard drive
 and partition it with xfs. For the shared virtual hard drive, I disabled caching in
 the options of it on the hypervisor.
+\begin{figure}
 \begin{lstlisting}
 fdisk /dev/vdb
 mkfs.xfs /dev/vdb1
 \end{lstlisting}
+\caption{disk formatting}
+\end{figure}
 Afterwards, mount the device to ''/mnt'', fill it with data and change the SElinux context, so the 
 webserver can access it to ''system\_u:object\_r:httpd\_sys\_content\_t:s0'' with ''chcon''.
 Then unmount it.
+\begin{figure}
 \begin{lstlisting}
 mount /dev/vdb1 /mnt
 touch /mnt/foobar
 chcon -R system_u:object_r:httpd_sys_content_t:s0 /mnt
 umount /mnt
 \end{lstlisting}
+\caption{mounting of the shared storage, SElinux adjustement}
+\end{figure}
 \paragraph{Cluster IP}
 The cluster IP is an IP that is bound to the public interface of the currently
 active node.
 It is defined using the ''ocf:heartbeat:IPaddr2'' resource agent.
+\begin{figure}
 \begin{lstlisting}
 pcs resource create ClusterIP ocf:heartbeat:IPaddr2 ip=192.168.178.190 cidr_netmask=32 nic=eth0 op monitor interval=5s
 \end{lstlisting}
-''pcs resource show ClusterIP'' shows more information about the resource:
+\caption{pcs resource ClusterIP}
+\end{figure}
+''pcs resource show ClusterIP'' shows more information about the resource.
+\begin{figure}
 \begin{lstlisting}
  Resource: ClusterIP (class=ocf provider=heartbeat type=IPaddr2)
   Attributes: ip=192.168.178.190 cidr_netmask=32 nic=eth0 
@@ -280,56 +314,83 @@ pcs resource create ClusterIP ocf:heartbeat:IPaddr2 ip=192.168.178.190 cidr_netm
               stop interval=0s timeout=20s (ClusterIP-stop-timeout-20s)
               monitor interval=5s (ClusterIP-monitor-interval-5s)
 \end{lstlisting}
+\caption{resource description}
+\end{figure}
 \paragraph{file system}
 The file system is a simple resource of type ''ocf:heartbeat:filesystem''.
+\begin{figure}
 \begin{lstlisting}
 pcs resource create cluster-data ocf:heartbeat:filesystem device=/dev/vdb1 directory=/var/www/mirror/ fstype=xfs op monitor interval=20
 \end{lstlisting}
+\caption{pcs resource shared data}
+\end{figure}
 ''pcs resource'' shows the resource:
+\begin{figure}
 \begin{lstlisting}
  cluster-data	(ocf::heartbeat:Filesystem):	Stopped 
 \end{lstlisting}
+\caption{pcs resource cluster-data}
+\end{figure}
 \paragraph{lighttpd}
 The resource standard for lighttpd here is ''systemd'', because there is no resource
 agent available for it that. Instead, the status that systemd reports is used to figure
 out if the resource is still alive.
+\begin{figure}
 \begin{lstlisting}
 pcs resource create lighttpd systemd:lighttpd op monitor interval=6s
 \end{lstlisting}
+\caption{pcs resource lighttpd}
+\end{figure}
 \paragraph{grouping and ordering the resources}
 The resources must be grouped and ordered to ensure that they are always
 run on the same host and run in the correct order. The latter is done with order
 constraints.
-Creating a group is fairly straight forward and done with ''pcs resource group add'':
+Creating a group is fairly straight forward and done with ''pcs resource group add''.
+\begin{figure}
 \begin{lstlisting}
 pcs resource group add lighty ClusterIP cluster-data lighttpd
 \end{lstlisting}
-''pcs resource'' shows the new group:
+\caption{pcs resource group}
+\end{figure}
+''pcs resource'' shows the new group.
+\begin{figure}
 \begin{lstlisting}
  Resource Group: lighty
      ClusterIP	(ocf::heartbeat:IPaddr2):	Stopped 
      cluster-data	(ocf::heartbeat:Filesystem):	Stopped 
      lighttpd	(systemd:lighttpd):	Stopped 
 \end{lstlisting}
-What remains for this paragraph is to define the correct order using ''pcs constraint'':
+\caption{pcs resource group view}
+\end{figure}
+What remains for this paragraph is to define the correct order using ''pcs constraint''.
+\begin{figure}
 \begin{lstlisting}
 pcs constraint order start cluster-data then start lighttpd
 \end{lstlisting}
-The program returns the understood order:
+\caption{pcs constraint}
+\end{figure}
+The program returns the understood order.
+\begin{figure}
 \begin{lstlisting}
 Adding cluster-data lighttpd (kind: Mandatory) (Options: first-action=start then-action=start)
 \end{lstlisting}
+\caption{pcs constraint output}
+\end{figure}
 ''pcs constraint'' then shows the orders it has:
+\begin{figure}
 \begin{lstlisting}
 Location Constraints:
 Ordering Constraints:
   start cluster-data then start lighttpd (kind:Mandatory)
 Colocation Constraints:
 \end{lstlisting}
+\caption{pcs constraint view}
+\end{figure}
 \paragraph{stonith}
 \ac{STONITH} in the cluster is done using fence-virt on the guests and fence-virtd on
 the host.
 This is the host configuration:
+\begin{figure}
 \begin{lstlisting}
 fence_virtd {
         listener = "serial";
@@ -359,36 +420,51 @@ groups {
 }
 
 \end{lstlisting}
+\caption{fence\_virtd host config}
+\end{figure}
 The guest configuration is done in pcs. After starting the daemon, it must be tested
 if communication works. This cone be done by using ''fence\_virt'':
+\begin{figure}
 \begin{lstlisting}
 $ fence_virt -D /dev/ttyS0 -o list
 \end{lstlisting}
+\caption{fencing test}
+\end{figure}
 The command should print a list of running \acp{VM}:
+\begin{figure}
 \begin{lstlisting}
 c7-testcluster-1     248d2268-2512-4a75-8398-cafbab580529 on
 c7-testcluster-2     c1e36261-a86b-42f5-89f7-8bf78d936d0c on
 c7-testcluster-3     653aa17a-d766-455a-b7a0-bdd997ee1d71 on
 \end{lstlisting}
+\caption{fencing list}
+\end{figure}
 After manually testing the functionality, the \ac{STONITH} resource can be configure
 using pcs. Fencing is done based on the \ac{UUID} of the \ac{VM}, not based on the name.
 Therefore, a list needs to be configured, which tells pacemaker what cluster node has what 
 \ac{UUID}. That list is the parameter ''pcmk\_host\_map''. The parameter ''pcmk\_host\_check'' tells
 the resource how to figure out what \acs{VM} can be fenced by the resource. That is not necessary here,
 because it is explicitely configured using the host map. Therefore it is set to ''none''.
+\begin{figure}
 \begin{lstlisting}
 $ pcs stonith create fencing fence_virt serial_device=/dev/ttyS0 pcmk_host_map='c7-testcluster-1:248d2268-2512-4a75-8398-cafbab580529;c7-testcluster-2:c1e36261-a86b-42f5-89f7-8bf78d936d0c;c7-testcluster-3:653aa17a-d766-455a-b7a0-bdd997ee1d71;' pcmk_host_check=none
 \end{lstlisting}
+\caption{pcs stonith}
+\end{figure}
 \paragraph{cluster test}
 The last thing to test are lighttpd, failover and \ac{STONITH}.
 The first thing is tested by simply accessing the website over the configured IP.
 If the files show up and can be downloaded, it's fine.
 \ac{STONITH} can be tested by running ''pcs stonith fence <node>'', where
 ''<node>'' stands for the node name.
+\begin{figure}
 \begin{lstlisting}
 $ pcs stonith fence c7-testcluster-1
 \end{lstlisting}
+\caption{pcs stonith fencing test}
+\end{figure}
 This command also tests for functional failover, if the node of lighttpd is fenced.
+\begin{figure}
 \begin{lstlisting}
 $ pcs stonith fence c7-testcluster-1
 Node: c7-testcluster-1 fenced
@@ -428,6 +504,8 @@ Daemon Status:
   pacemaker: active/enabled
   pcsd: active/enabled
 \end{lstlisting}
+\caption{pcs stonith test and output}
+\end{figure}
 c7-testcluster-1 was fenced correctly and the resources are now all started on c7-testcluster-2.
 Looks like everything is finished. Fin!
 
