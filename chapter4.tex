@@ -37,6 +37,12 @@ do.
 
 Changes to the file system must always be done on each node.
 Changes to the cluster configuration must only be done once.
+You must use raw files without read/write buffering for shared disks, otherwise you will
+risk data corruption because of concurrent read/write access from the VMs.
+If you use a container format like qcow2, \ac{Qemu}, the virtualisation software running the
+virtual environment, will keep format meta data in memory and will work with potentially
+old data, causing corruption.
+
 \subsubsection{Installation of the distribution and the packages}
 The first steps to building the cluster is to install the operating system on the nodes.
 For that, you need to download the CentOS 7 ISO from the official website\footnote{\url{https://www.centos.org/download/}}.
