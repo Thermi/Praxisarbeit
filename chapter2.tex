@@ -145,6 +145,14 @@ endianness=big]{32}
 \item nolock manager
 \end{description}
 \paragraph{GlusterFS}
+\ac{GlusterFS} is an open source cluster file system. It is owned by Red Hat, Inc.
+GlusterFS is client-server based, where the server part stores the data and the client part
+accesses it. The servers store the data in virtual volumes, which can be striped and
+be distributed over different servers. The client stores and retrieves the data from the
+server using different protocols, which must be supported by server side
+translators, which are services that translate the storage format of GlusterFS
+to the protocol the client speaks.
+% TODO: Complete
 \paragraph{OCFS2}
 \ac{OCFS2} is a cluster file system developed by Oracle.
 Its original purpose was to serve as cluster file system for Oracle's database software.
